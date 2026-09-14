@@ -12,6 +12,7 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
+        html, body { overflow-y: scroll !important; }
         .icon-sm { font-size: 1rem; }
         .icon-md { font-size: 1.25rem; }
         .icon-lg { font-size: 1.5rem; }
@@ -27,6 +28,8 @@
             .print-view-container { display: block !important; }
             main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
             .print-break { page-break-inside: avoid; margin-bottom: 2rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; }
+            .print-page-break { page-break-before: always; }
+            .print-avoid-break { page-break-inside: avoid; }
         }
     </style>
 </head>
@@ -64,7 +67,11 @@
                 lvl3: "Excellent Level",
                 notSupported: "Speech-to-text not supported in this browser.",
                 readAloud: "Read question aloud",
-                stopReading: "Stop reading"
+                stopReading: "Stop reading",
+                bookletBtn: "Model Answers Booklet",
+                backBtn: "Back to Practicals",
+                printBooklet: "Print Booklet",
+                modelAnsTitle: "Master Model Answers Booklet"
             },
             ro: {
                 title: "Practici Obligatorii GCSE AQA",
@@ -92,7 +99,11 @@
                 lvl3: "Nivel excelent",
                 notSupported: "Dictarea nu este suportată în acest browser.",
                 readAloud: "Citiți întrebarea",
-                stopReading: "Opriți citirea"
+                stopReading: "Opriți citirea",
+                bookletBtn: "Broșură Răspunsuri Model",
+                backBtn: "Înapoi la Practici",
+                printBooklet: "Imprimă Broșura",
+                modelAnsTitle: "Broșură cu Răspunsuri Model"
             },
             pl: {
                 title: "Wymagane Praktyki AQA GCSE",
@@ -120,7 +131,11 @@
                 lvl3: "Poziom doskonały",
                 notSupported: "Dyktowanie nie jest obsługiwane w tej przeglądarce.",
                 readAloud: "Przeczytaj pytanie",
-                stopReading: "Zatrzymaj czytanie"
+                stopReading: "Zatrzymaj czytanie",
+                bookletBtn: "Broszura Odpowiedzi Wzorcowych",
+                backBtn: "Wróć do Praktyk",
+                printBooklet: "Drukuj Broszurę",
+                modelAnsTitle: "Broszura Wzorcowych Odpowiedzi"
             },
             uk: {
                 title: "Обов'язкові Практикуми AQA GCSE",
@@ -148,7 +163,11 @@
                 lvl3: "Відмінний рівень",
                 notSupported: "Диктування не підтримується у цьому браузері.",
                 readAloud: "Прочитати питання",
-                stopReading: "Зупинити читання"
+                stopReading: "Зупинити читання",
+                bookletBtn: "Буклет Модельних Відповідей",
+                backBtn: "Назад до Практикумів",
+                printBooklet: "Друк Буклету",
+                modelAnsTitle: "Буклет Модельних Відповідей"
             }
         };
 
@@ -1020,6 +1039,56 @@
             );
         }
 
+        // --- COMPONENT: Booklet View ---
+        function BookletView({ lang, ui, setViewMode }) {
+            const handlePrint = () => window.print();
+
+            return (
+                <div className="animate-in fade-in bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden mb-8">
+                    <div className="bg-emerald-700 p-6 flex justify-between items-center interactive-container">
+                        <button onClick={() => setViewMode('practicals')} className="px-4 py-2 bg-emerald-800 text-white rounded-lg hover:bg-emerald-900 font-medium flex items-center gap-2 transition-colors border border-emerald-600">
+                            <i className="ph-bold ph-arrow-left icon-md"></i> {ui.backBtn}
+                        </button>
+                        <button onClick={handlePrint} className="px-6 py-2 bg-white text-emerald-800 rounded-lg hover:bg-emerald-50 font-bold flex items-center gap-2 transition-colors shadow-sm">
+                            <i className="ph-bold ph-printer icon-md"></i> {ui.printBooklet}
+                        </button>
+                    </div>
+
+                    <div className="p-8 sm:p-12 print-view-container block">
+                        <div className="text-center mb-12 border-b-2 border-emerald-800 pb-8">
+                            <h1 className="text-4xl font-bold text-slate-900 mb-2">{ui.title}</h1>
+                            <h2 className="text-2xl text-emerald-700 font-semibold">{ui.modelAnsTitle}</h2>
+                            <p className="mt-4 text-slate-500 text-lg">{ui.createdBy}</p>
+                        </div>
+
+                        <div className="space-y-12">
+                            {PRACTICALS.map((p, index) => (
+                                <div key={p.id} className={index > 0 ? "print-page-break mt-12 pt-8 border-t-4 border-slate-100" : ""}>
+                                    <h3 className="text-2xl font-bold text-emerald-800 mb-6 flex items-center gap-3">
+                                        <i className={`ph-fill ${p.icon} text-3xl`}></i> {p.title[lang]}
+                                    </h3>
+                                    <div className="space-y-8">
+                                        {p.questions.map(q => (
+                                            <div key={q.id} className="print-avoid-break bg-slate-50 p-6 rounded-xl border border-slate-200">
+                                                <p className="font-bold text-slate-900 text-lg mb-4 flex items-start gap-2">
+                                                    <span className="shrink-0 text-emerald-600">Q.</span> 
+                                                    <span>{q.q[lang]} <span className="text-emerald-700 text-sm ml-1 font-semibold">[{q.maxMarks} Marks]</span></span>
+                                                </p>
+                                                <div className="pl-4 border-l-4 border-emerald-500 bg-white p-4 rounded-r-lg shadow-sm">
+                                                    <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2">Model Answer ({ui.lvl3})</p>
+                                                    <p className="text-slate-800 whitespace-pre-wrap leading-relaxed">{q.models.level3}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
         // --- COMPONENT: Practical Tab Container ---
         function PracticalTab({ practical, lang, ui }) {
             // Manage state for all questions inside this practical
@@ -1073,6 +1142,7 @@
         function App() {
           const [activePracticalId, setActivePracticalId] = useState(PRACTICALS[0].id); 
           const [lang, setLang] = useState('en');
+          const [viewMode, setViewMode] = useState('practicals'); // 'practicals' or 'booklet'
 
           const activePractical = PRACTICALS.find(p => p.id === activePracticalId);
           const ui = UI_TEXT[lang];
@@ -1111,29 +1181,43 @@
                                 </div>
                             </div>
                         </div>
+
+                        {/* Booklet Button */}
+                        <div className="w-full lg:w-auto flex items-center lg:justify-end">
+                            <button onClick={() => setViewMode(viewMode === 'booklet' ? 'practicals' : 'booklet')} className="w-full lg:w-auto bg-white text-emerald-800 font-bold px-5 py-2.5 rounded-xl shadow-md hover:bg-emerald-50 transition-transform hover:scale-105 flex items-center justify-center gap-2 border-2 border-emerald-100">
+                                <i className={`ph-bold ${viewMode === 'booklet' ? 'ph-arrow-left' : 'ph-book-open'} icon-md`}></i> 
+                                {viewMode === 'booklet' ? ui.backBtn : ui.bookletBtn}
+                            </button>
+                        </div>
                     </div>
                     
                     {/* Named Tabs Navigation */}
-                    <div className="mt-6 pt-5 border-t border-emerald-600/50">
-                        <nav className="tab-navigation flex flex-wrap gap-2">
-                            {PRACTICALS.map(p => (
-                                <button 
-                                    key={p.id}
-                                    onClick={() => setActivePracticalId(p.id)} 
-                                    className={`px-4 py-2.5 rounded-lg font-bold transition-all text-sm flex items-center gap-2 shadow-sm
-                                        ${activePracticalId === p.id ? 'bg-red-600 text-white scale-105 shadow-md ring-2 ring-red-400 ring-offset-2 ring-offset-emerald-700' : 'bg-white text-slate-800 hover:bg-slate-100 border border-transparent hover:border-slate-300'}`}
-                                >
-                                    <i className={`ph-bold ${p.icon} text-lg`}></i>
-                                    <span className="whitespace-nowrap">{p.title[lang]}</span>
-                                </button>
-                            ))}
-                        </nav>
-                    </div>
+                    {viewMode === 'practicals' && (
+                        <div className="mt-6 pt-5 border-t border-emerald-600/50">
+                            <nav className="tab-navigation flex flex-wrap gap-2">
+                                {PRACTICALS.map(p => (
+                                    <button 
+                                        key={p.id}
+                                        onClick={() => setActivePracticalId(p.id)} 
+                                        className={`px-4 py-2.5 rounded-lg font-bold transition-all text-sm flex items-center gap-2 shadow-sm
+                                            ${activePracticalId === p.id ? 'bg-red-600 text-white scale-105 shadow-md ring-2 ring-red-400 ring-offset-2 ring-offset-emerald-700' : 'bg-white text-slate-800 hover:bg-slate-100 border border-transparent hover:border-slate-300'}`}
+                                    >
+                                        <i className={`ph-bold ${p.icon} text-lg`}></i>
+                                        <span className="whitespace-nowrap">{p.title[lang]}</span>
+                                    </button>
+                                ))}
+                            </nav>
+                        </div>
+                    )}
                 </div>
               </header>
 
               <main className="flex-1 w-full max-w-5xl mx-auto p-4 py-10">
-                <PracticalTab key={activePracticalId} practical={activePractical} lang={lang} ui={ui} />
+                {viewMode === 'practicals' ? (
+                    <PracticalTab key={activePracticalId} practical={activePractical} lang={lang} ui={ui} />
+                ) : (
+                    <BookletView lang={lang} ui={ui} setViewMode={setViewMode} />
+                )}
               </main>
 
               <footer className="interactive-container text-center p-6 text-slate-500 text-sm font-medium">
