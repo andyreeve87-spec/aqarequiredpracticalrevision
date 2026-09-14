@@ -71,7 +71,8 @@
                 bookletBtn: "Model Answers Booklet",
                 backBtn: "Back to Practicals",
                 printBooklet: "Print Booklet",
-                modelAnsTitle: "Master Model Answers Booklet"
+                modelAnsTitle: "Master Model Answers Booklet",
+                tapToFindOut: "Tap to find out about this practical (Aim & Methodology)"
             },
             ro: {
                 title: "Practici Obligatorii GCSE AQA",
@@ -103,7 +104,8 @@
                 bookletBtn: "Broșură Răspunsuri Model",
                 backBtn: "Înapoi la Practici",
                 printBooklet: "Imprimă Broșura",
-                modelAnsTitle: "Broșură cu Răspunsuri Model"
+                modelAnsTitle: "Broșură cu Răspunsuri Model",
+                tapToFindOut: "Atingeți pentru a afla despre această practică (Scop și Metodologie)"
             },
             pl: {
                 title: "Wymagane Praktyki AQA GCSE",
@@ -135,7 +137,8 @@
                 bookletBtn: "Broszura Odpowiedzi Wzorcowych",
                 backBtn: "Wróć do Praktyk",
                 printBooklet: "Drukuj Broszurę",
-                modelAnsTitle: "Broszura Wzorcowych Odpowiedzi"
+                modelAnsTitle: "Broszura Wzorcowych Odpowiedzi",
+                tapToFindOut: "Dotknij, aby dowiedzieć się o tej praktyce (Cel i Metodologia)"
             },
             uk: {
                 title: "Обов'язкові Практикуми AQA GCSE",
@@ -167,7 +170,8 @@
                 bookletBtn: "Буклет Модельних Відповідей",
                 backBtn: "Назад до Практикумів",
                 printBooklet: "Друк Буклету",
-                modelAnsTitle: "Буклет Модельних Відповідей"
+                modelAnsTitle: "Буклет Модельних Відповідей",
+                tapToFindOut: "Натисніть, щоб дізнатися про цей практикум (Мета та Методологія)"
             }
         };
 
@@ -179,6 +183,12 @@
                 id: 'p1',
                 title: { en: '1. Microscopy', ro: '1. Microscopie', pl: '1. Mikroskopia', uk: '1. Мікроскопія' },
                 icon: 'ph-microscope',
+                synopsis: {
+                    en: "Aim: To use a light microscope to observe, draw and label a selection of plant and animal cells. Methodology: You will peel a thin layer of onion epidermis, place it on a slide with water and iodine stain, and carefully lower a coverslip. You will view the cells under the microscope, starting with the lowest power objective lens, and calculate the magnification of your drawing.",
+                    ro: "Scop: Să folosiți un microscop optic pentru a observa, desena și eticheta o selecție de celule vegetale și animale. Metodologie: Veți decoji un strat subțire de epidermă de ceapă, îl veți plasa pe o lamă cu apă și colorant de iod și veți coborî cu grijă o lamelă. Veți vizualiza celulele la microscop, începând cu obiectivul cu cea mai mică putere, și veți calcula mărirea desenului dumneavoastră.",
+                    pl: "Cel: Użycie mikroskopu świetlnego do obserwacji, rysowania i oznaczania wybranych komórek roślinnych i zwierzęcych. Metodologia: Obierzesz cienką warstwę naskórka cebuli, umieścisz ją na szkiełku z wodą i barwnikiem jodowym, a następnie ostrożnie opuścisz szkiełko nakrywkowe. Obejrzysz komórki pod mikroskopem, zaczynając od obiektywu o najmniejszym powiększeniu, i obliczysz powiększenie swojego rysunku.",
+                    uk: "Мета: Використовувати світловий мікроскоп для спостереження, малювання та маркування вибраних рослинних і тваринних клітин. Методологія: Ви знімете тонкий шар епідермісу цибулі, помістите його на предметне скло з водою та йодним барвником, і обережно опустите покривне скло. Ви розглянете клітини під мікроскопом, починаючи з об'єктива з найменшим збільшенням, і обчислите збільшення свого малюнка."
+                },
                 questions: [
                     {
                         id: 'p1q1',
@@ -285,8 +295,8 @@
                         markFn: (t) => {
                             let marks = 0, pts = [], imp = [];
                             if (/(?=.*2400)/i.test(t)) { marks++; pts.push("Correct conversion to µm (2400)."); } else { imp.push("Convert 2.4 mm to µm ('2400' µm)."); }
-                            if (/(?=.*(2400\s*\/\s*8|0\.3\s*\*\s*1000|300))/i.test(t)) { marks++; pts.push("Correct calculation (2400 / 8 = 300)."); } else { imp.push("Calculate the length: '2400 / 8' = 300 µm."); }
-                            if (/(?=.*(3\s*(x|\*)\s*10\^2|3\s*x\s*10\s*to\s*the\s*power\s*of\s*2|3e2))/i.test(t)) { marks++; pts.push("Correct standard form (3 x 10^2)."); } else { imp.push("State the final answer in standard form: '3 x 10^2' µm."); }
+                            if (/(?=.*(2400\s*[\/\div]\s*8|0\.3\s*[\*x]\s*1000|300))/i.test(t)) { marks++; pts.push("Correct calculation (2400 / 8 = 300)."); } else { imp.push("Calculate the length: '2400 / 8' = 300 µm."); }
+                            if (/(?=.*(3\s*[\*x]\s*10\^2|3\s*x\s*10\s*to\s*the\s*power\s*of\s*2|3e2))/i.test(t)) { marks++; pts.push("Correct standard form (3 x 10^2)."); } else { imp.push("State the final answer in standard form: '3 x 10^2' µm."); }
                             return { marks, positivePoints: pts, improvement: imp.join(" ") };
                         }
                     }
@@ -296,6 +306,12 @@
                 id: 'p2',
                 title: { en: '2. Microbiology (Triple)', ro: '2. Microbiologie (Triple)', pl: '2. Mikrobiologia (Triple)', uk: '2. Мікробіологія (Triple)' },
                 icon: 'ph-virus',
+                synopsis: {
+                    en: "Aim: To investigate the effect of antiseptics or antibiotics on bacterial growth using agar plates and measuring zones of inhibition. Methodology: You will use aseptic techniques to inoculate an agar plate with E. coli. You will place paper discs soaked in different antiseptics onto the agar, secure the lid with tape, and incubate at 25°C. Finally, you will measure the clear zones around the discs.",
+                    ro: "Scop: Investigarea efectului antisepticelor sau antibioticelor asupra creșterii bacteriene utilizând plăci de agar și măsurând zonele de inhibiție. Metodologie: Veți folosi tehnici aseptice pentru a inocula o placă de agar cu E. coli. Veți plasa discuri de hârtie înmuiate în diferite antiseptice pe agar, veți asigura capacul cu bandă și veți incuba la 25°C. În final, veți măsura zonele clare din jurul discurilor.",
+                    pl: "Cel: Zbadanie wpływu środków antyseptycznych lub antybiotyków na wzrost bakterii przy użyciu płytek agarowych i pomiaru stref zahamowania. Metodologia: Użyjesz technik aseptycznych do zaszczepienia płytki agarowej bakteriami E. coli. Umieścisz krążki bibuły nasączone różnymi środkami antyseptycznymi na agarze, zabezpieczysz pokrywkę taśmą i poddasz inkubacji w 25°C. Na koniec zmierzysz strefy przejaśnienia wokół krążków.",
+                    uk: "Мета: Дослідити вплив антисептиків або антибіотиків на ріст бактерій за допомогою агарових пластин та вимірювання зон пригнічення. Методологія: Ви будете використовувати асептичні методи для посіву E. coli на агарову пластинку. Ви помістите паперові диски, просочені різними антисептиками, на агар, закріпите кришку скотчем і інкубуєте при 25°C. Нарешті, ви виміряєте прозорі зони навколо дисків."
+                },
                 questions: [
                     {
                         id: 'p2q1',
@@ -394,6 +410,12 @@
                 id: 'p3',
                 title: { en: '3. Osmosis', ro: '3. Osmoză', pl: '3. Osmoza', uk: '3. Осмос' },
                 icon: 'ph-drop',
+                synopsis: {
+                    en: "Aim: To investigate the effect of a range of concentrations of salt or sugar solutions on the mass of plant tissue. Methodology: You will cut potato cylinders of equal size, measure their initial mass, and place them in tubes with different concentrations of sugar solution. After a set time, you will remove them, blot them dry, measure their final mass, and calculate the percentage change.",
+                    ro: "Scop: Investigarea efectului unei game de concentrații de soluții de sare sau zahăr asupra masei țesutului vegetal. Metodologie: Veți tăia cilindri de cartof de dimensiuni egale, le veți măsura masa inițială și îi veți plasa în tuburi cu diferite concentrații de soluție de zahăr. După un timp stabilit, îi veți scoate, îi veți usca, le veți măsura masa finală și veți calcula modificarea procentuală.",
+                    pl: "Cel: Zbadanie wpływu różnych stężeń roztworów soli lub cukru na masę tkanki roślinnej. Metodologia: Wytniesz cylindry ziemniaka równej wielkości, zmierzysz ich masę początkową i umieścisz je w probówkach z różnymi stężeniami roztworu cukru. Po określonym czasie wyjmiesz je, osuszysz, zmierzysz ich masę końcową i obliczysz procentową zmianę.",
+                    uk: "Мета: Дослідити вплив різних концентрацій розчинів солі або цукру на масу рослинної тканини. Методологія: Ви наріжете картопляні циліндри однакового розміру, виміряєте їх початкову масу та помістите в пробірки з різними концентраціями розчину цукру. Через встановлений час ви виймете їх, промокнете, виміряєте кінцеву масу та обчислите відсоткову зміну."
+                },
                 questions: [
                     {
                         id: 'p3q1',
@@ -492,6 +514,12 @@
                 id: 'p4',
                 title: { en: '4. Food Tests', ro: '4. Teste Alimentare', pl: '4. Testy Żywności', uk: '4. Харчові Тести' },
                 icon: 'ph-flask',
+                synopsis: {
+                    en: "Aim: To use qualitative reagents to test for a range of carbohydrates, lipids and proteins. Methodology: You will crush the food sample and mix it with water. You will use iodine to test for starch, Benedict's with heat for reducing sugars, Biuret for protein, and ethanol with water for lipids.",
+                    ro: "Scop: Utilizarea reactivilor calitativi pentru a testa o gamă de carbohidrați, lipide și proteine. Metodologie: Veți zdrobi proba de alimente și o veți amesteca cu apă. Veți folosi iod pentru a testa amidonul, Benedict cu căldură pentru zaharuri reducătoare, Biuret pentru proteine și etanol cu apă pentru lipide.",
+                    pl: "Cel: Użycie odczynników jakościowych do testowania na obecność różnych węglowodanów, lipidów i białek. Metodologia: Rozgniatasz próbkę żywności i mieszasz ją z wodą. Użyjesz jodu do testowania skrobi, odczynnika Benedicta z ciepłem dla cukrów redukujących, Biuretu dla białka oraz etanolu z wodą dla lipidów.",
+                    uk: "Мета: Використовувати якісні реагенти для перевірки ряду вуглеводів, ліпідів та білків. Методологія: Ви подрібните зразок їжі та змішаєте його з водою. Ви будете використовувати йод для перевірки на крохмаль, Бенедикт з нагріванням для відновлюючих цукрів, Біурет для білків та етанол з водою для ліпідів."
+                },
                 questions: [
                     {
                         id: 'p4q1',
@@ -590,6 +618,12 @@
                 id: 'p5',
                 title: { en: '5. Enzymes', ro: '5. Enzime', pl: '5. Enzymy', uk: '5. Ферменти' },
                 icon: 'ph-puzzle-piece',
+                synopsis: {
+                    en: "Aim: To investigate the effect of pH on the rate of reaction of amylase enzyme. Methodology: You will mix amylase, starch, and a pH buffer in a water bath at 35°C. Every 30 seconds, you will remove a drop of the mixture and add it to iodine on a spotting tile. You will record the time taken for the iodine to remain orange, indicating all starch is broken down.",
+                    ro: "Scop: Investigarea efectului pH-ului asupra vitezei de reacție a enzimei amilază. Metodologie: Veți amesteca amilază, amidon și un tampon de pH într-o baie de apă la 35°C. La fiecare 30 de secunde, veți scoate o picătură din amestec și o veți adăuga la iod pe o placă cu godeuri. Veți înregistra timpul necesar pentru ca iodul să rămână portocaliu, indicând că tot amidonul a fost descompus.",
+                    pl: "Cel: Zbadanie wpływu pH na szybkość reakcji enzymu amylazy. Metodologia: Zmieszasz amylazę, skrobię i bufor pH w łaźni wodnej o temperaturze 35°C. Co 30 sekund wyjmiesz kroplę mieszaniny i dodasz ją do jodu na płytce. Zapiszesz czas, w którym jod pozostaje pomarańczowy, co wskazuje na całkowity rozkład skrobi.",
+                    uk: "Мета: Дослідити вплив pH на швидкість реакції ферменту амілази. Методологія: Ви змішаєте амілазу, крохмаль та рН-буфер у водяній бані при 35°C. Кожні 30 секунд ви будете виймати краплю суміші і додавати її до йоду на планшеті. Ви запишете час, за який йод залишається помаранчевим, що свідчить про розщеплення всього крохмалю."
+                },
                 questions: [
                     {
                         id: 'p5q1',
@@ -688,6 +722,12 @@
                 id: 'p6',
                 title: { en: '6. Photosynthesis', ro: '6. Fotosinteză', pl: '6. Fotosynteza', uk: '6. Фотосинтез' },
                 icon: 'ph-plant',
+                synopsis: {
+                    en: "Aim: To investigate the effect of light intensity on the rate of photosynthesis using an aquatic organism. Methodology: You will place pondweed in a solution of sodium hydrogencarbonate. You will place an LED lamp at a specific distance and count the number of oxygen bubbles produced in one minute. You will repeat this at various distances.",
+                    ro: "Scop: Investigarea efectului intensității luminii asupra ratei fotosintezei la un organism acvatic. Metodologie: Veți pune o plantă de apă într-o soluție de hidrogencarbonat de sodiu. Veți plasa o lampă LED la o distanță specifică și veți număra bulele de oxigen produse într-un minut. Veți repeta acest lucru la diferite distanțe.",
+                    pl: "Cel: Zbadanie wpływu natężenia światła na szybkość fotosyntezy z wykorzystaniem organizmu wodnego. Metodologia: Umieścisz moczarkę w roztworze wodorowęglanu sodu. Umieścisz lampę LED w określonej odległości i policzysz liczbę pęcherzyków tlenu wyprodukowanych w ciągu minuty. Powtórzysz to w różnych odległościach.",
+                    uk: "Мета: Дослідити вплив інтенсивності світла на швидкість фотосинтезу за допомогою водного організму. Методологія: Ви помістите водяну рослину в розчин гідрокарбонату натрію. Ви встановите світлодіодну лампу на певній відстані і порахуєте кількість бульбашок кисню, утворених за одну хвилину. Ви повторите це на різних відстанях."
+                },
                 questions: [
                     {
                         id: 'p6q1',
@@ -883,6 +923,41 @@
                 >
                     <i className={`ph-fill ${isSpeaking ? 'ph-stop-circle' : 'ph-speaker-high'} icon-md`}></i>
                 </button>
+            );
+        }
+
+        // --- COMPONENT: Synopsis Box ---
+        function SynopsisBox({ practical, lang, ui }) {
+            const [isOpen, setIsOpen] = useState(false);
+
+            return (
+                <div className="mb-8 bg-white border border-emerald-200 rounded-xl shadow-sm overflow-hidden interactive-container">
+                    <button 
+                        onClick={() => setIsOpen(!isOpen)} 
+                        className="w-full flex items-center justify-between p-4 bg-emerald-50 hover:bg-emerald-100 transition-colors text-left"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="bg-emerald-600 text-white w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm">
+                                <i className="ph-bold ph-info icon-sm"></i>
+                            </div>
+                            <span className="font-bold text-emerald-900">{ui.tapToFindOut}</span>
+                        </div>
+                        <i className={`ph-bold ph-caret-down text-emerald-600 icon-md transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}></i>
+                    </button>
+                    
+                    {isOpen && (
+                        <div className="p-5 border-t border-emerald-100 bg-white animate-in slide-in-from-top-2">
+                            <div className="flex items-start gap-4">
+                                <div className="mt-1">
+                                    <SpeakQuestionButton text={practical.synopsis[lang]} langCode={DICT_LANGS[lang]} ui={ui} />
+                                </div>
+                                <div className="text-slate-700 leading-relaxed">
+                                    <p className="whitespace-pre-wrap">{practical.synopsis[lang]}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
             );
         }
 
@@ -1112,6 +1187,9 @@
                             <h2 className="text-2xl font-bold text-emerald-700 mt-4">{practical.title[lang]}</h2>
                         </div>
                     </div>
+
+                    {/* Synopsis Box added here */}
+                    <SynopsisBox practical={practical} lang={lang} ui={ui} />
 
                     <div className="flex flex-col gap-2">
                         {practical.questions.map(q => (
