@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AQA GCSE Required Practicals Paper 1</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        .icon-sm { font-size: 1rem; }
+        .icon-md { font-size: 1.25rem; }
+        .icon-lg { font-size: 1.5rem; }
+        .icon-xl { font-size: 2rem; }
+        
+        /* Bulletproof Print CSS for Individual Tabs */
+        @media screen {
+            .print-view-container { display: none !important; }
+        }
+        @media print {
+            body { background: white; margin: 0; padding: 0; color: black; }
+            .interactive-container, header, footer, .tab-navigation, .action-buttons { display: none !important; }
+            .print-view-container { display: block !important; }
+            main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
+            .print-break { page-break-inside: avoid; margin-bottom: 2rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- MULTILINGUAL UI DICTIONARY ---
+        const UI_TEXT = {
+            en: {
+                title: "AQA GCSE Required Practicals",
+                subtitle: "Paper 1 Practice",
+                createdBy: "Created by Mr A Reeve",
+                selectQ: "Select Practical",
+                typeHere: "Type or speak your answer here...",
+                dictCheck: "Check dictation for errors before marking!",
+                startDict: "Start Dictation",
+                stopDict: "Stop Dictation",
+                hideMod: "Hide Models",
+                revealMod: "Reveal Models",
+                markAns: "Mark Answer",
+                submitMsg: "Submit your answer for automated AQA specific checking based on keyword logic.",
+                checkMsg: "Checking against mark scheme...",
+                autoFeed: "Automated Feedback",
+                didWell: "What you did well:",
+                toImprove: "To improve:",
+                printFeed: "Print Feedback for this Practical",
+                yourAns: "Your Answer:",
+                noAns: "[No answer provided]",
+                notMarked: "[Question not marked]",
+                lvl1: "Basic Level",
+                lvl2: "Good Level",
+                lvl3: "Excellent Level",
+                notSupported: "Speech-to-text not supported in this browser.",
+                readAloud: "Read question aloud",
+                stopReading: "Stop reading"
+            },
+            ro: {
+                title: "Practici Obligatorii GCSE AQA",
+                subtitle: "Practică Lucrarea 1",
+                createdBy: "Creat de Dl. A Reeve",
+                selectQ: "Selectați Practica",
+                typeHere: "Tastați sau rostiți răspunsul aici...",
+                dictCheck: "Verificați dictarea de erori înainte de evaluare!",
+                startDict: "Începeți Dictarea",
+                stopDict: "Opriți Dictarea",
+                hideMod: "Ascunde Modele",
+                revealMod: "Afișează Modele",
+                markAns: "Evaluează Răspunsul",
+                submitMsg: "Trimiteți răspunsul pentru evaluare automată pe baza cuvintelor cheie.",
+                checkMsg: "Se verifică pe baza baremului...",
+                autoFeed: "Feedback Automat",
+                didWell: "Ce ați făcut bine:",
+                toImprove: "Pentru a îmbunătăți:",
+                printFeed: "Imprimă Feedback pentru această practică",
+                yourAns: "Răspunsul tău:",
+                noAns: "[Niciun răspuns furnizat]",
+                notMarked: "[Întrebare neevaluată]",
+                lvl1: "Nivel de bază",
+                lvl2: "Nivel bun",
+                lvl3: "Nivel excelent",
+                notSupported: "Dictarea nu este suportată în acest browser.",
+                readAloud: "Citiți întrebarea",
+                stopReading: "Opriți citirea"
+            },
+            pl: {
+                title: "Wymagane Praktyki AQA GCSE",
+                subtitle: "Praktyka Arkusz 1",
+                createdBy: "Stworzone przez Pana A Reeve",
+                selectQ: "Wybierz Praktykę",
+                typeHere: "Wpisz lub powiedz swoją odpowiedź tutaj...",
+                dictCheck: "Sprawdź dyktando pod kątem błędów przed oceną!",
+                startDict: "Rozpocznij Dyktowanie",
+                stopDict: "Zatrzymaj Dyktowanie",
+                hideMod: "Ukryj Modele",
+                revealMod: "Pokaż Modele",
+                markAns: "Oceń Odpowiedź",
+                submitMsg: "Prześlij odpowiedź do automatycznej oceny na podstawie słów kluczowych.",
+                checkMsg: "Sprawdzanie na podstawie schematu punktowania...",
+                autoFeed: "Automatyczna Informacja Zwrotna",
+                didWell: "Co zrobiłeś dobrze:",
+                toImprove: "Do poprawy:",
+                printFeed: "Drukuj Informację dla tej praktyki",
+                yourAns: "Twoja Odpowiedź:",
+                noAns: "[Brak odpowiedzi]",
+                notMarked: "[Pytanie nieocenione]",
+                lvl1: "Poziom podstawowy",
+                lvl2: "Poziom dobry",
+                lvl3: "Poziom doskonały",
+                notSupported: "Dyktowanie nie jest obsługiwane w tej przeglądarce.",
+                readAloud: "Przeczytaj pytanie",
+                stopReading: "Zatrzymaj czytanie"
+            },
+            uk: {
+                title: "Обов'язкові Практикуми AQA GCSE",
+                subtitle: "Практика Документ 1",
+                createdBy: "Створено містером А Рівом",
+                selectQ: "Виберіть Практикум",
+                typeHere: "Введіть або скажіть свою відповідь тут...",
+                dictCheck: "Перевірте диктування на помилки перед оцінюванням!",
+                startDict: "Почати Диктування",
+                stopDict: "Зупинити Диктування",
+                hideMod: "Сховати Моделі",
+                revealMod: "Показати Моделі",
+                markAns: "Оцінити Відповідь",
+                submitMsg: "Надішліть свою відповідь для автоматичної перевірки на основі ключових слів.",
+                checkMsg: "Перевірка за схемою оцінювання...",
+                autoFeed: "Автоматичний Відгук",
+                didWell: "Що ви зробили добре:",
+                toImprove: "Що покращити:",
+                printFeed: "Друк Відгуку для цього практикуму",
+                yourAns: "Ваша Відповідь:",
+                noAns: "[Відповідь не надана]",
+                notMarked: "[Питання не оцінено]",
+                lvl1: "Базовий рівень",
+                lvl2: "Хороший рівень",
+                lvl3: "Відмінний рівень",
+                notSupported: "Диктування не підтримується у цьому браузері.",
+                readAloud: "Прочитати питання",
+                stopReading: "Зупинити читання"
+            }
+        };
+
+        const DICT_LANGS = { en: 'en-GB', ro: 'ro-RO', pl: 'pl-PL', uk: 'uk-UA' };
+
+        // --- DATA: Practicals and Questions with Full Translated Queries ---
+        const PRACTICALS = [
+            {
+                id: 'p1',
+                title: { en: '1. Microscopy', ro: '1. Microscopie', pl: '1. Mikroskopia', uk: '1. Мікроскопія' },
+                icon: 'ph-microscope',
+                questions: [
+                    {
+                        id: 'p1q1',
+                        q: {
+                            en: "A student wants to view onion epidermal cells using a light microscope. Describe how they should prepare the slide. (4 marks)",
+                            ro: "Un elev dorește să vizualizeze celulele epidermice de ceapă folosind un microscop optic. Descrieți cum ar trebui să pregătească lama. (4 puncte)",
+                            pl: "Uczeń chce obejrzeć komórki naskórka cebuli pod mikroskopem świetlnym. Opisz, w jaki sposób powinien przygotować preparat. (4 punkty)",
+                            uk: "Учень хоче розглянути клітини епідермісу цибулі за допомогою світлового мікроскопа. Опишіть, як він має підготувати препарат. (4 бали)"
+                        },
+                        maxMarks: 4,
+                        models: {
+                            level1: "Put water on a slide. Add the onion layer. Put a coverslip on it.",
+                            level2: "Add a drop of water to a slide. Peel a thin layer of onion skin and place it on the water. Put a coverslip over it.",
+                            level3: "Add a drop of water to the middle of a clean slide. Peel a thin layer of epidermis/onion skin using forceps. Place the tissue on the water drop and add a drop of iodine solution. Lower a coverslip over the tissue at an angle to avoid trapping air bubbles."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(water))(?=.*(drop|slide|middl))/i.test(t)) { marks++; pts.push("Add a drop of water to the slide."); } else { imp.push("Mention adding a drop of 'water' to the 'slide'."); }
+                            if (/(?=.*(peel|thin|layer|skin|epiderm))/i.test(t)) { marks++; pts.push("Peel a thin layer of epidermis."); } else { imp.push("State you must peel a 'thin layer' of epidermis/onion skin."); }
+                            if (/(?=.*(iodin|stain|dye))/i.test(t)) { marks++; pts.push("Add a drop of iodine solution."); } else { imp.push("Mention adding 'iodine' or 'stain' to the tissue."); }
+                            if (/(?=.*(cover\s*slip|coverslip))(?=.*(angl|bubbl|air|trap|careful|lower))/i.test(t) || /(cover.*slip)/i.test(t)) { marks++; pts.push("Lower a coverslip to avoid air bubbles."); } else { imp.push("Mention lowering a 'coverslip' (at an angle to avoid air bubbles)."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p1q2',
+                        q: {
+                            en: "The student measures the length of a cell on their drawing as 45 mm. The actual length of the cell is 0.15 mm. Calculate the magnification of the drawing. Show your working. (3 marks)",
+                            ro: "Elevul măsoară lungimea unei celule pe desenul său ca fiind de 45 mm. Lungimea reală a celulei este de 0,15 mm. Calculați mărirea desenului. Arătați-vă calculul. (3 puncte)",
+                            pl: "Uczeń mierzy długość komórki na swoim rysunku jako 45 mm. Rzeczywista długość komórki wynosi 0,15 mm. Oblicz powiększenie rysunku. Pokaż swoje obliczenia. (3 punkty)",
+                            uk: "Учень вимірює довжину клітини на своєму малюнку як 45 мм. Фактична довжина клітини становить 0,15 мм. Обчисліть збільшення малюнка. Покажіть свої розрахунки. (3 бали)"
+                        },
+                        maxMarks: 3,
+                        models: {
+                            level1: "45 / 0.15",
+                            level2: "Magnification = Image / Actual = 45 / 0.15 = 300",
+                            level3: "Recall equation: Magnification = Image size / Actual size. Substitution: 45 / 0.15. Answer: x300"
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(image|drawing|picture).*(actual|real|object)|(i\s*[\/\div]\s*a)|(magnification\s*=\s*(size|length))/i.test(t)) { marks++; pts.push("Stated the correct equation (Image / Actual)."); } else { imp.push("State the equation: Magnification = 'Image size' / 'Actual size'."); }
+                            if (/(45).*(div|over|\/|by).*(0\.15|\.15)/i.test(t)) { marks++; pts.push("Correct substitution (45 / 0.15)."); } else { imp.push("Show the correct substitution: '45 / 0.15'."); }
+                            if (/(300)/i.test(t)) { marks++; pts.push("Correct answer (x300)."); } else { imp.push("State the final answer: '300' (or x300)."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p1q3',
+                        q: {
+                            en: "Give one reason why it is necessary to use a very thin layer of onion tissue, and one reason why iodine solution is used. (2 marks)",
+                            ro: "Dați un motiv pentru care este necesar să folosiți un strat foarte subțire de țesut de ceapă și un motiv pentru care este utilizată soluția de iod. (2 puncte)",
+                            pl: "Podaj jeden powód, dla którego konieczne jest użycie bardzo cienkiej warstwy tkanki cebuli, i jeden powód, dla którego używa się roztworu jodu. (2 punkty)",
+                            uk: "Назвіть одну причину, чому необхідно використовувати дуже тонкий шар тканини цибулі, і одну причину, чому використовується розчин йоду. (2 бали)"
+                        },
+                        maxMarks: 2,
+                        models: {
+                            level1: "Thin so you can see it. Iodine adds colour.",
+                            level2: "Thin so light passes through. Iodine stains the cells to see the nucleus.",
+                            level3: "Thin layer: To allow light to pass through so the internal cellular structures can be seen. Iodine: To act as a stain / add contrast to sub-cellular structures (such as the nucleus) making them visible."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(light|see|visibl|through))/i.test(t)) { marks++; pts.push("Reason for thin layer: allows light through."); } else { imp.push("State that a thin layer allows 'light' to pass through to see structures."); }
+                            if (/(?=.*(stain|dye|colour|color|contrast|visibl|nucleus|structur))/i.test(t) && t.includes("iodin")) { marks++; pts.push("Reason for iodine: stains structures to make them visible."); } else { imp.push("State that iodine acts as a 'stain' to make structures (like the nucleus) visible."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p1q4',
+                        q: {
+                            en: "The student has placed the prepared slide on the microscope stage. Describe how they should use the microscope to safely bring the cells into clear focus at the highest magnification. (3 marks)",
+                            ro: "Elevul a plasat lama pregătită pe masa microscopului. Descrieți cum ar trebui să folosească microscopul pentru a aduce în siguranță celulele într-o focalizare clară la cea mai mare mărire. (3 puncte)",
+                            pl: "Uczeń umieścił przygotowany preparat na stoliku mikroskopu. Opisz, jak powinien używać mikroskopu, aby bezpiecznie uzyskać wyraźną ostrość komórek przy największym powiększeniu. (3 punkty)",
+                            uk: "Учень помістив підготовлений мікропрепарат на предметний столик мікроскопа. Опишіть, як він повинен використовувати мікроскоп, щоб безпечно сфокусувати клітини при найвищому збільшенні. (3 бали)"
+                        },
+                        maxMarks: 3,
+                        models: {
+                            level1: "Look through the lens and turn the knobs until it's clear.",
+                            level2: "Start with the lowest lens. Turn the coarse knob to focus. Then switch to a high lens and turn the fine knob.",
+                            level3: "Select the lowest power objective lens first. Use the coarse focusing dial to bring the cells into view (looking from the side so the lens does not crash into the slide). Switch to a higher power objective lens and use the fine focusing dial to bring the image into sharp focus."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(low|small|start))(?=.*(lens|objective|power))/i.test(t)) { marks++; pts.push("Select lowest power objective lens first."); } else { imp.push("Specify starting with the 'lowest power objective lens'."); }
+                            if (/(?=.*(coarse|rough))(?=.*(focus|dial|knob|wheel|view|safe|side|crash))/i.test(t)) { marks++; pts.push("Use coarse focusing dial to bring into view safely."); } else { imp.push("Mention using the 'coarse focusing dial' to safely bring cells into view."); }
+                            if (/(?=.*(high|fine))(?=.*(focus|dial|knob|wheel|sharp|clear))/i.test(t) && /(fine)/i.test(t)) { marks++; pts.push("Switch to higher power and use fine focusing dial."); } else { imp.push("Explain switching to higher power and using the 'fine focusing dial'."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p1q5',
+                        q: {
+                            en: "The student uses a stage micrometer to measure the diameter of the field of view as 2.4 mm. They observe 8 epidermal cells stretching across the full diameter. Calculate the mean length of a single epidermal cell in micrometres (µm). Give your answer in standard form. (3 marks)",
+                            ro: "Elevul folosește un micrometru pentru a măsura diametrul câmpului vizual la 2,4 mm. El observă 8 celule epidermice care se întind pe întregul diametru. Calculați lungimea medie a unei singure celule epidermice în micrometri (µm). Dați răspunsul în formă standard. (3 puncte)",
+                            pl: "Uczeń używa mikrometru, aby zmierzyć średnicę pola widzenia jako 2,4 mm. Obserwuje 8 komórek naskórka rozciągających się na całą średnicę. Oblicz średnią długość pojedynczej komórki naskórka w mikrometrach (µm). Podaj odpowiedź w postaci standardowej. (3 punkty)",
+                            uk: "Учень використовує мікрометр, щоб виміряти діаметр поля зору як 2,4 мм. Він спостерігає 8 епідермальних клітин, що розтягнулися на весь діаметр. Обчисліть середню довжину однієї епідермальної клітини в мікрометрах (мкм). Дайте свою відповідь у стандартному вигляді. (3 бали)"
+                        },
+                        maxMarks: 3,
+                        models: {
+                            level1: "2.4 / 8 = 0.3. Then change to micrometres.",
+                            level2: "2.4mm is 2400µm. 2400 / 8 = 300µm. Standard form is 3 x 10^2.",
+                            level3: "Conversion: 2.4 mm = 2400 µm. Calculation: 2400 / 8 = 300 µm. Standard form: 3 x 10^2 µm."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*2400)/i.test(t)) { marks++; pts.push("Correct conversion to µm (2400)."); } else { imp.push("Convert 2.4 mm to µm ('2400' µm)."); }
+                            if (/(?=.*(2400\s*\/\s*8|0\.3\s*\*\s*1000|300))/i.test(t)) { marks++; pts.push("Correct calculation (2400 / 8 = 300)."); } else { imp.push("Calculate the length: '2400 / 8' = 300 µm."); }
+                            if (/(?=.*(3\s*(x|\*)\s*10\^2|3\s*x\s*10\s*to\s*the\s*power\s*of\s*2|3e2))/i.test(t)) { marks++; pts.push("Correct standard form (3 x 10^2)."); } else { imp.push("State the final answer in standard form: '3 x 10^2' µm."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    }
+                ]
+            },
+            {
+                id: 'p2',
+                title: { en: '2. Microbiology (Triple)', ro: '2. Microbiologie (Triple)', pl: '2. Mikrobiologia (Triple)', uk: '2. Мікробіологія (Triple)' },
+                icon: 'ph-virus',
+                questions: [
+                    {
+                        id: 'p2q1',
+                        q: {
+                            en: "Describe how a student could safely prepare an uncontaminated agar plate of E. coli bacteria and test the effectiveness of two different antiseptics. (6 marks)",
+                            ro: "Descrieți cum un elev ar putea pregăti în siguranță o placă de agar necontaminată cu bacterii E. coli și cum ar putea testa eficacitatea a două antiseptice diferite. (6 puncte)",
+                            pl: "Opisz, w jaki sposób uczeń mógłby bezpiecznie przygotować niezanieczyszczoną płytkę agarową z bakteriami E. coli i przetestować skuteczność dwóch różnych środków antyseptycznych. (6 punktów)",
+                            uk: "Опишіть, як учень може безпечно підготувати незабруднену агарову пластинку з бактеріями E. coli та перевірити ефективність двох різних антисептиків. (6 балів)"
+                        },
+                        maxMarks: 6,
+                        models: {
+                            level1: "Clean the desk. Spread bacteria on the agar. Put the two antiseptics on paper discs and put them on the jelly. Tape the lid and measure the clear circles later.",
+                            level2: "Sterilise the Petri dish. Sterilise an inoculating loop in a flame. Spread E. coli on the agar. Soak paper discs in the two antiseptics and place them on the agar, with a water control disc. Tape the lid to let air in and incubate at 25°C.",
+                            level3: "Sterilise the petri dish and agar before use to kill unwanted microbes. Sterilise the inoculating loop by passing it through a Bunsen burner flame. Spread the E. coli evenly across the agar plate. Soak filter paper discs in the antiseptics and place them on the agar. Include a control disc soaked in sterile water. Secure the lid with adhesive tape, but do not seal it completely (to prevent dangerous anaerobic bacteria). Incubate at a maximum of 25°C in schools (to prevent human pathogens)."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(sterilis|kill|autoclave|flame))(?=.*(dish|plate|agar|gel))/i.test(t)) { marks++; pts.push("Mentioned sterilising Petri dish/agar."); } else { imp.push("Mention that you must 'sterilise' the Petri dish/agar."); }
+                            if (/(?=.*(sterilis|flame|bunsen|red hot))(?=.*(loop|wire|needle))/i.test(t)) { marks++; pts.push("Mentioned sterilising the inoculating loop in a flame."); } else { imp.push("State that the 'inoculating loop' must be sterilised in a 'flame'."); }
+                            if (/(?=.*(spread|swab|streak|transfer))(?=.*(bacteria|coli|evenly))/i.test(t)) { marks++; pts.push("Mentioned spreading the bacteria evenly."); } else { imp.push("Mention 'spreading' the bacteria evenly on the agar."); }
+                            if (/(?=.*(disc|paper|filter))(?=.*(antiseptic|soak|place))/i.test(t)) { marks++; pts.push("Mentioned placing soaked antiseptic discs."); } else { imp.push("Mention placing paper 'discs' soaked in 'antiseptics' on the agar."); }
+                            if (/(?=.*(control|water|steril water))/i.test(t)) { marks++; pts.push("Mentioned using a control disc."); } else { imp.push("Mention including a 'control' disc (e.g., sterile water)."); }
+                            if (/(?=.*(tape|secur|seal|lid|anaerobic|oxygen|25|incubate|pathogen))/i.test(t) && (/(tape|seal)/i.test(t) || /(25)/i.test(t))) { marks++; pts.push("Mentioned safe taping (no anaerobes) or incubation (max 25°C)."); } else { imp.push("Explain securing the lid without sealing completely, or incubating at max '25°C'."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p2q2',
+                        q: {
+                            en: "After incubation, the clear zone (zone of inhibition) around Antiseptic A has a diameter of 18 mm. Calculate the cross-sectional area of the clear zone. Use π = 3.14. Give your answer to 3 significant figures. (4 marks)",
+                            ro: "După incubare, zona clară (zona de inhibiție) din jurul Antisepticului A are un diametru de 18 mm. Calculați aria secțiunii transversale a zonei clare. Utilizați π = 3,14. Dați răspunsul la 3 cifre semnificative. (4 puncte)",
+                            pl: "Po inkubacji strefa przejaśnienia (strefa zahamowania) wokół Antyseptyku A ma średnicę 18 mm. Oblicz pole przekroju poprzecznego strefy przejaśnienia. Użyj π = 3,14. Podaj odpowiedź z dokładnością do 3 cyfr znaczących. (4 punkty)",
+                            uk: "Після інкубації прозора зона (зона пригнічення) навколо Антисептика А має діаметр 18 мм. Обчисліть площу поперечного перерізу прозорої зони. Використовуйте π = 3,14. Дайте відповідь з точністю до 3 значущих цифр. (4 бали)"
+                        },
+                        maxMarks: 4,
+                        models: {
+                            level1: "Area = pi x r squared. r is 9.",
+                            level2: "Radius is 18/2 = 9. Area = 3.14 x 9^2 = 254.34 mm^2.",
+                            level3: "Calculate radius: 18 / 2 = 9 mm. Recall equation: Area = πr^2. Substitution: 3.14 x 9^2 (or 3.14 x 81). Answer: 254 mm² (to 3 sig figs)."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(9|nine|18\s*[\/\div]\s*2|radius.*9)/i.test(t)) { marks++; pts.push("Correctly found radius (9 mm)."); } else { imp.push("Calculate the radius: '9' mm."); }
+                            if (/(pi|3\.14).*(r\^2|r\s*squared|radius\s*squared|r2|9\^2|81|9\s*(\*|times|x)\s*9)/i.test(t) || /(area.*pi)/i.test(t)) { marks++; pts.push("Recalled formula Area = πr²."); } else { imp.push("State the formula: Area = 'πr²'."); }
+                            if (/(3\.14|pi).*(\*|x|times).*(81|9\^2|9\s*squared|9\s*(\*|x|times)\s*9)|(254\.34)/i.test(t)) { marks++; pts.push("Correct substitution into formula."); } else { imp.push("Show correct substitution: '3.14 x 9²'."); }
+                            if (/(254)/i.test(t)) { marks++; pts.push("Correct final answer to 3 sig figs (254)."); } else { imp.push("State the final answer to 3 sig figs: '254' mm²."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p2q3',
+                        q: {
+                            en: "For this investigation, state the independent variable, the dependent variable, and one variable that must be controlled. (3 marks)",
+                            ro: "Pentru această investigație, precizați variabila independentă, variabila dependentă și o variabilă care trebuie controlată. (3 puncte)",
+                            pl: "Dla tego badania podaj zmienną niezależną, zmienną zależną i jedną zmienną, którą należy kontrolować. (3 punkty)",
+                            uk: "Для цього дослідження вкажіть незалежну змінну, залежну змінну та одну змінну, яку необхідно контролювати. (3 бали)"
+                        },
+                        maxMarks: 3,
+                        models: {
+                            level1: "Independent is the antiseptic. Dependent is the clear zone.",
+                            level2: "Independent variable: Type of antiseptic. Dependent variable: Size of the zone of inhibition. Control variable: Temperature.",
+                            level3: "Independent: Type of antiseptic used. Dependent: Area or diameter of the zone of inhibition. Control: Volume of antiseptic / size of paper disc / incubation temperature / incubation time."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(independent))(?=.*(type|antiseptic|chemical))/i.test(t) || /(type.*antiseptic)/i.test(t)) { marks++; pts.push("Correct independent variable (type of antiseptic)."); } else { imp.push("State the independent variable is the 'type of antiseptic'."); }
+                            if (/(?=.*(dependent))(?=.*(area|diameter|size|zone|inhibition|clear))/i.test(t) || /(size.*zone)/i.test(t)) { marks++; pts.push("Correct dependent variable (area/diameter of zone)."); } else { imp.push("State the dependent variable is the 'area/size of the zone'."); }
+                            if (/(?=.*(control))(?=.*(volume|size|disc|temperature|time|incubati))/i.test(t) || /(temperature|volume|time)/i.test(t)) { marks++; pts.push("Correct control variable."); } else { imp.push("Name a control variable (e.g., 'temperature', 'volume of antiseptic')."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p2q4',
+                        q: {
+                            en: "Antiseptic B produced a zone of inhibition with an area of 150 mm². Conclude which antiseptic is more effective and explain why. (2 marks)",
+                            ro: "Antisepticul B a produs o zonă de inhibiție cu o suprafață de 150 mm². Concluzionați care antiseptic este mai eficient și explicați de ce. (2 puncte)",
+                            pl: "Antyseptyk B wytworzył strefę zahamowania o powierzchni 150 mm². Wyciągnij wniosek, który antyseptyk jest skuteczniejszy i wyjaśnij dlaczego. (2 punkty)",
+                            uk: "Антисептик B утворив зону пригнічення площею 150 мм². Зробіть висновок, який антисептик є більш ефективним, і поясніть чому. (2 бали)"
+                        },
+                        maxMarks: 2,
+                        models: {
+                            level1: "Antiseptic A is better because it has a bigger area.",
+                            level2: "Antiseptic A is more effective. This is because 254 mm² is larger than 150 mm², meaning it killed more bacteria.",
+                            level3: "Antiseptic A is more effective. Because it produced a larger zone of inhibition (254 mm² compared to 150 mm²), meaning it killed more bacteria / prevented more bacterial growth than Antiseptic B."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(antiseptic a|a is better|a is more))/i.test(t)) { marks++; pts.push("Concluded Antiseptic A is more effective."); } else { imp.push("Conclude that 'Antiseptic A' is more effective."); }
+                            if (/(?=.*(larger|bigger|greater|more))(?=.*(zone|area|kill|bacteria|growth|prevent))/i.test(t)) { marks++; pts.push("Explained it has a larger zone/killed more bacteria."); } else { imp.push("Explain that A produced a 'larger zone' or 'killed more bacteria'."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    }
+                ]
+            },
+            {
+                id: 'p3',
+                title: { en: '3. Osmosis', ro: '3. Osmoză', pl: '3. Osmoza', uk: '3. Осмос' },
+                icon: 'ph-drop',
+                questions: [
+                    {
+                        id: 'p3q1',
+                        q: {
+                            en: "A student investigates osmosis in potato tissue using different concentrations of sugar solution. Give two variables the student must control. Explain how one of these variables could affect the results if not controlled. (4 marks)",
+                            ro: "Un elev investighează osmoza în țesutul de cartof folosind diferite concentrații de soluție de zahăr. Dați două variabile pe care elevul trebuie să le controleze. Explicați modul în care una dintre aceste variabile ar putea afecta rezultatele dacă nu este controlată. (4 puncte)",
+                            pl: "Uczeń bada osmozę w tkance ziemniaka przy użyciu różnych stężeń roztworu cukru. Podaj dwie zmienne, które uczeń musi kontrolować. Wyjaśnij, w jaki sposób jedna z tych zmiennych mogłaby wpłynąć na wyniki, gdyby nie była kontrolowana. (4 punkty)",
+                            uk: "Учень досліджує осмос у тканині картоплі, використовуючи різні концентрації розчину цукру. Назвіть дві змінні, які учень повинен контролювати. Поясніть, як одна з цих змінних може вплинути на результати, якщо її не контролювати. (4 бали)"
+                        },
+                        maxMarks: 4,
+                        models: {
+                            level1: "Control temperature and time. If it's hotter, osmosis is faster.",
+                            level2: "Control temperature and surface area. If the temperature is higher, water molecules have more energy, so osmosis happens faster, changing the mass more.",
+                            level3: "Variables (any 2): Temperature, volume of solution, starting surface area/shape of potato, time left in solution, potato variety/age. Explanation: Temperature: higher temperature increases the kinetic energy of water molecules, increasing the rate of osmosis, which would lead to an inaccurate greater mass change in the given time."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(temperature|volume|surface area|shape|time|variety|age))/i.test(t)) { marks++; pts.push("Identified a control variable."); } else { imp.push("Name a control variable (e.g., 'temperature', 'time', 'surface area')."); }
+                            if (/(temperature|volume|surface area|shape|time|variety|age).*?(temperature|volume|surface area|shape|time|variety|age)/i.test(t) || /(temperature and time|size and temperature)/i.test(t)) { marks++; pts.push("Identified a second control variable."); } else { imp.push("Name a second control variable."); }
+                            if (/(?=.*(kinetic|energy|rate|faster|more area|more osmosis))/i.test(t)) { marks++; pts.push("Explained the physical effect of not controlling the variable."); } else { imp.push("Explain the effect on the process (e.g., higher temperature increases 'kinetic energy' / 'rate' of osmosis)."); }
+                            if (/(?=.*(mass|inaccurate|result|greater change))/i.test(t)) { marks++; pts.push("Explained the final impact on results/mass."); } else { imp.push("Explain how this affects the results (e.g., causes an inaccurate 'mass change')."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p3q2',
+                        q: {
+                            en: "A potato cylinder had an initial mass of 2.50 g and a final mass of 2.15 g. Calculate the percentage change in mass. (3 marks)",
+                            ro: "Un cilindru de cartof a avut o masă inițială de 2,50 g și o masă finală de 2,15 g. Calculați modificarea procentuală a masei. (3 puncte)",
+                            pl: "Cylinder ziemniaka miał masę początkową 2,50 g i masę końcową 2,15 g. Oblicz procentową zmianę masy. (3 punkty)",
+                            uk: "Циліндр картоплі мав початкову масу 2,50 г і кінцеву масу 2,15 г. Обчисліть відсоткову зміну маси. (3 бали)"
+                        },
+                        maxMarks: 3,
+                        models: {
+                            level1: "2.15 - 2.50 = -0.35. Then find percentage.",
+                            level2: "Change = -0.35g. Percentage = (-0.35 / 2.50) x 100 = -14%",
+                            level3: "Change in mass = 2.15 - 2.50 = -0.35 g. Calculation: (-0.35 / 2.50) x 100. Answer: -14%"
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(0\.35|\.35)/i.test(t)) { marks++; pts.push("Calculated mass change (-0.35 g)."); } else { imp.push("Calculate the mass change: 2.15 - 2.50 = '-0.35' g."); }
+                            if (/(0\.35|\.35).*(div|\/|over|by).*(2\.50|2\.5)/i.test(t) || /(change.*divid.*initial)/i.test(t) || /(percent.*100)/i.test(t)) { marks++; pts.push("Showed correct percentage calculation method."); } else { imp.push("Show the calculation: (Change / Initial) x 100."); }
+                            if (/(14)/i.test(t)) { marks++; pts.push("Correct answer (-14%)."); } else { imp.push("State the final answer: '-14%'."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p3q3',
+                        q: {
+                            en: "Why did the student blot the potato cylinders dry with a paper towel before weighing them the second time? (2 marks)",
+                            ro: "De ce elevul a uscat cilindrii de cartofi cu un prosop de hârtie înainte de a-i cântări a doua oară? (2 puncte)",
+                            pl: "Dlaczego uczeń osuszył cylindry ziemniaka ręcznikiem papierowym przed ich drugim ważeniem? (2 punkty)",
+                            uk: "Чому учень просушив циліндри картоплі паперовим рушником перед тим, як зважувати їх удруге? (2 бали)"
+                        },
+                        maxMarks: 2,
+                        models: {
+                            level1: "To get the water off the outside so it doesn't weigh more.",
+                            level2: "To remove excess surface water. This ensures only the mass of the potato tissue is measured.",
+                            level3: "To remove excess surface fluid/water. So that the surface liquid doesn't add to the final mass / so only the actual mass of the potato tissue is measured."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(remov|wipe|dry|take off|get rid))(?=.*(excess|surfac|fluid|water|liquid|outsid))/i.test(t)) { marks++; pts.push("Mentioned removing excess surface water."); } else { imp.push("State that it removes 'excess surface water'."); }
+                            if (/(?=.*(mass|weigh|heavier|inaccurat|actual|real|potato))/i.test(t)) { marks++; pts.push("Explained it stops surface water adding to the mass."); } else { imp.push("Explain that the surface water would add to the 'mass' incorrectly."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p3q4',
+                        q: {
+                            en: "A graph is plotted showing the concentration of sucrose solution on the x-axis and percentage change in mass on the y-axis. The line of best fit crosses the x-axis at 0.3 mol/dm³. Explain, in terms of osmosis, why the line crosses the x-axis at this point, and what is happening to the cells at the extremes of 0.1 mol/dm³ and 0.5 mol/dm³. (6 marks)",
+                            ro: "Un grafic arată concentrația soluției de zaharoză pe axa x și modificarea procentuală a masei pe axa y. Linia de cea mai bună potrivire intersectează axa x la 0,3 mol/dm³. Explicați, în termeni de osmoză, de ce linia intersectează axa x în acest punct și ce se întâmplă cu celulele la extremele de 0,1 și 0,5 mol/dm³. (6 puncte)",
+                            pl: "Wykres przedstawia stężenie roztworu sacharozy na osi x i procentową zmianę masy na osi y. Linia najlepszego dopasowania przecina oś x przy 0,3 mol/dm³. Wyjaśnij, w kategoriach osmozy, dlaczego linia przecina oś x w tym punkcie i co dzieje się z komórkami w skrajnych wartościach 0,1 mol/dm³ i 0,5 mol/dm³. (6 punktów)",
+                            uk: "Графік показує концентрацію розчину сахарози на осі x та відсоткову зміну маси на осі y. Лінія найкращого наближення перетинає вісь x на рівні 0,3 моль/дм³. Поясніть, з точки зору осмосу, чому лінія перетинає вісь x у цій точці, і що відбувається з клітинами на крайнощах 0,1 моль/дм³ і 0,5 моль/дм³. (6 балів)"
+                        },
+                        maxMarks: 6,
+                        models: {
+                            level1: "At 0.3 there is no mass change. At 0.1 water moves in and it gets heavier. At 0.5 water moves out and it gets lighter.",
+                            level2: "At 0.3 mol/dm³, there is no net movement of water because the concentration is the same inside and outside. At 0.1 mol/dm³, water enters the cells by osmosis, increasing mass. At 0.5 mol/dm³, water leaves the cells by osmosis, decreasing mass.",
+                            level3: "At 0.3 mol/dm³: There is no net movement of water because the concentration of the solution inside the potato cells equals the concentration outside. At 0.1 mol/dm³ (hypotonic): Water moves into the cells by osmosis from a higher water concentration outside to a lower one inside, increasing the mass. At 0.5 mol/dm³ (hypertonic): Water moves out of the cells by osmosis to the more concentrated sucrose solution outside, decreasing the mass."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*0\.3)(?=.*(no|net|zero))(?=.*(movement|mass|osmosis))/i.test(t) || /(no net movement)/i.test(t)) { marks++; pts.push("0.3: Stated no net movement of water."); } else { imp.push("At 0.3: State there is 'no net movement' of water."); }
+                            if (/(?=.*0\.3)(?=.*(equal|same|match))(?=.*(concentration|inside|outside))/i.test(t)) { marks++; pts.push("0.3: Explained concentrations are equal."); } else { imp.push("At 0.3: Explain the 'concentration' inside the potato equals the outside."); }
+                            if (/(?=.*0\.1)(?=.*(in|into|enter))(?=.*(water|osmosis))/i.test(t)) { marks++; pts.push("0.1: Water moves into the cells."); } else { imp.push("At 0.1: State that water moves 'into' the cells by osmosis."); }
+                            if (/(?=.*0\.1)(?=.*(increas|gain|heavier))(?=.*(mass|weight))/i.test(t) || /(mass increases)/i.test(t)) { marks++; pts.push("0.1: Explained mass increases."); } else { imp.push("At 0.1: State that the 'mass increases'."); }
+                            if (/(?=.*0\.5)(?=.*(out|leav|exit))(?=.*(water|osmosis))/i.test(t)) { marks++; pts.push("0.5: Water moves out of the cells."); } else { imp.push("At 0.5: State that water moves 'out' of the cells by osmosis."); }
+                            if (/(?=.*0\.5)(?=.*(decreas|lose|loss|lighter))(?=.*(mass|weight))/i.test(t) || /(mass decreases)/i.test(t)) { marks++; pts.push("0.5: Explained mass decreases."); } else { imp.push("At 0.5: State that the 'mass decreases'."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    }
+                ]
+            },
+            {
+                id: 'p4',
+                title: { en: '4. Food Tests', ro: '4. Teste Alimentare', pl: '4. Testy Żywności', uk: '4. Харчові Тести' },
+                icon: 'ph-flask',
+                questions: [
+                    {
+                        id: 'p4q1',
+                        q: {
+                            en: "Describe how a student would test a food sample for the presence of protein. Include the reagent used and the positive result. (4 marks)",
+                            ro: "Descrieți modul în care un elev ar testa o probă de alimente pentru prezența proteinelor. Includeți reactivul utilizat și rezultatul pozitiv. (4 puncte)",
+                            pl: "Opisz, w jaki sposób uczeń zbadałby próbkę żywności na obecność białka. Uwzględnij użyty odczynnik i wynik pozytywny. (4 punkty)",
+                            uk: "Опишіть, як учень буде перевіряти зразок їжі на наявність білка. Включіть використовуваний реагент і позитивний результат. (4 бали)"
+                        },
+                        maxMarks: 4,
+                        models: {
+                            level1: "Crush the food. Add Biuret. It goes purple if there is protein.",
+                            level2: "Crush the food and mix with water. Filter it. Add Biuret reagent. The solution will turn from blue to purple/lilac.",
+                            level3: "Grind up/crush the food sample and mix with distilled water. Filter the mixture to remove solid food pieces. Add Biuret reagent (or sodium hydroxide and copper sulfate) to the solution. Positive result: The solution turns from blue to purple/lilac."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(grind|crush|pestle|mortar|mash))(?=.*(water|distilled|liquid|dissolve|mix))/i.test(t)) { marks++; pts.push("Mentioned crushing food and mixing with water."); } else { imp.push("Mention 'crushing/grinding' the food and mixing it with 'water'."); }
+                            if (/(?=.*(filter|funnel|sieve|solid))/i.test(t)) { marks++; pts.push("Mentioned filtering to remove solids."); } else { imp.push("Mention 'filtering' the mixture to remove solids."); }
+                            if (/(?=.*biuret)/i.test(t) || /(?=.*(sodium hydroxide))(?=.*(copper sulfate))/i.test(t)) { marks++; pts.push("Identified Biuret reagent."); } else { imp.push("Name 'Biuret' reagent."); }
+                            if (/(?=.*(purple|lilac))/i.test(t)) { marks++; pts.push("Identified positive result (purple/lilac)."); } else { imp.push("State the positive result turns the solution 'purple' or 'lilac'."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p4q2',
+                        q: {
+                            en: "A student is given an unknown liquid food sample. Describe how the student could find out if the sample contains glucose and lipids. Include relevant safety precautions. (6 marks)",
+                            ro: "Unui elev i se dă o probă de hrană lichidă necunoscută. Descrieți cum ar putea afla elevul dacă proba conține glucoză și lipide. Includeți măsuri de siguranță relevante. (6 puncte)",
+                            pl: "Uczeń otrzymuje nieznaną płynną próbkę żywności. Opisz, w jaki sposób uczeń mógłby sprawdzić, czy próbka zawiera glukozę i lipidy. Uwzględnij odpowiednie środki ostrożności. (6 punktów)",
+                            uk: "Учневі дають невідомий зразок рідкої їжі. Опишіть, як учень міг би дізнатися, чи містить зразок глюкозу та ліпіди. Включіть відповідні заходи безпеки. (6 балів)"
+                        },
+                        maxMarks: 6,
+                        models: {
+                            level1: "Use Benedict's for glucose and heat it. It turns red. Use ethanol for lipids and it goes cloudy. Wear goggles.",
+                            level2: "To test for glucose, add Benedict's reagent and heat in a water bath. It will turn brick-red. For lipids, add ethanol, shake it, and pour into water. It will form a cloudy emulsion. Safety: wear goggles and keep ethanol away from fire.",
+                            level3: "Glucose: Add Benedict's reagent to the sample. Heat in a water bath at 75°C. Positive result: turns from blue to green, yellow, or brick-red. Lipids: Use the emulsion test (add ethanol, shake, pour into water; positive: cloudy white emulsion forms) OR add Sudan III stain (positive: red layer on top). Safety: Wear safety goggles (hazardous chemicals/hot water) AND/OR keep ethanol away from naked flames as it is highly flammable."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*benedict)/i.test(t)) { marks++; pts.push("Glucose test: Benedict's reagent."); } else { imp.push("Glucose test: Name 'Benedict's' reagent."); }
+                            if (/(?=.*(heat|warm|bath|boil|75))/i.test(t)) { marks++; pts.push("Glucose test: Heating."); } else { imp.push("Glucose test: State that it must be 'heated' (e.g., in a water bath)."); }
+                            if (/(?=.*(green|yellow|orang|red|brick))/i.test(t) && t.includes("benedict")) { marks++; pts.push("Glucose test: Correct positive colour."); } else { imp.push("Glucose test: State the positive colour (turns 'green, yellow, or brick-red')."); }
+                            if (/(?=.*(ethanol|alcohol|sudan))/i.test(t)) { marks++; pts.push("Lipid test: Ethanol or Sudan III."); } else { imp.push("Lipid test: Name 'ethanol' (or Sudan III)."); }
+                            if (/(?=.*(cloud|milk|emulsion|white|red layer))/i.test(t)) { marks++; pts.push("Lipid test: Correct positive result."); } else { imp.push("Lipid test: State the positive result (forms a 'cloudy/milky emulsion')."); }
+                            if (/(?=.*(safety|goggle|glass|eye|flame|fire|flammabl))/i.test(t)) { marks++; pts.push("Included safety precautions."); } else { imp.push("Include safety precautions (wear 'goggles' or keep ethanol away from 'flames')."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p4q3',
+                        q: {
+                            en: "The student uses Benedict's test on two different samples, A and B. Sample A turns green and Sample B turns brick-red. What does this tell the student about the concentration of sugar in the two samples? Explain your reasoning. (3 marks)",
+                            ro: "Elevul folosește testul Benedict pe două probe diferite, A și B. Proba A devine verde și proba B devine roșu-cărămiziu. Ce îi spune acest lucru elevului despre concentrația de zahăr din cele două probe? Explicați-vă raționamentul. (3 puncte)",
+                            pl: "Uczeń przeprowadza test Benedicta na dwóch różnych próbkach, A i B. Próbka A zmienia kolor na zielony, a próbka B na ceglastoczerwony. Co to mówi uczniowi o stężeniu cukru w obu próbkach? Wyjaśnij swoje rozumowanie. (3 punkty)",
+                            uk: "Учень використовує тест Бенедикта на двох різних зразках, А і В. Зразок А стає зеленим, а зразок В - цегляно-червоним. Що це говорить учневі про концентрацію цукру у двох зразках? Поясніть свої міркування. (3 бали)"
+                        },
+                        maxMarks: 3,
+                        models: {
+                            level1: "Both have sugar. Sample B has more sugar than Sample A.",
+                            level2: "Both samples contain reducing sugars. Sample B has a higher concentration of sugar than Sample A because brick-red means more sugar than green.",
+                            level3: "Both samples contain reducing sugars/glucose. Sample B has a higher concentration of sugar than Sample A. This is because Benedict's is a semi-quantitative test, meaning the colour indicates approximate concentration (blue -> green -> yellow -> red)."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(both|two|each))(?=.*(contain|have|sugar|reduc|glucos))/i.test(t)) { marks++; pts.push("Stated both contain sugar."); } else { imp.push("State that 'both' samples contain reducing sugar."); }
+                            if (/(?=.*(b|second))(?=.*(more|higher|greater))(?=.*(sugar|concentrat))/i.test(t) || /(a has less)/i.test(t)) { marks++; pts.push("Stated Sample B has higher concentration."); } else { imp.push("State that 'Sample B has a higher concentration' of sugar than Sample A."); }
+                            if (/(?=.*(semi-quantit|indicat|approximat|scale|blue.*green.*yellow.*red))/i.test(t) || /(red means more.*green means less)/i.test(t)) { marks++; pts.push("Explained the colour scale (semi-quantitative)."); } else { imp.push("Explain that Benedict's provides an approximate concentration scale (green is low, red is high)."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p4q4',
+                        q: {
+                            en: "Iodine solution is used to test a plant leaf for starch after the plant has been kept in a dark cupboard for 48 hours. What colour will the iodine solution be? Give a reason for your answer. (2 marks)",
+                            ro: "Soluția de iod este utilizată pentru a testa o frunză de plantă pentru amidon după ce planta a fost ținută într-un dulap întunecat timp de 48 de ore. Ce culoare va avea soluția de iod? Dați un motiv pentru răspunsul dumneavoastră. (2 puncte)",
+                            pl: "Roztworu jodu używa się do zbadania liścia rośliny na obecność skrobi po przetrzymywaniu rośliny w ciemnej szafce przez 48 godzin. Jakiego koloru będzie roztwór jodu? Podaj powód swojej odpowiedzi. (2 punkty)",
+                            uk: "Розчин йоду використовується для перевірки листя рослини на наявність крохмалю після того, як рослину тримали в темній шафі протягом 48 годин. Якого кольору буде розчин йоду? Наведіть причину вашої відповіді. (2 бали)"
+                        },
+                        maxMarks: 2,
+                        models: {
+                            level1: "Orange. The plant hasn't made any starch in the dark.",
+                            level2: "Yellow-brown/orange. The starch has been used up for respiration, and no new starch was made because there was no light for photosynthesis.",
+                            level3: "Yellow-brown / orange. The starch has been broken down/used up for respiration, and no new starch could be made because there was no light for photosynthesis."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(yellow|brown|orang|stay|remain))/i.test(t)) { marks++; pts.push("Correct colour (yellow-brown/orange)."); } else { imp.push("State the colour will be 'yellow-brown' or 'orange' (the iodine does not change)."); }
+                            if (/(?=.*(used|broken|respir|no light|no photosynthesis))/i.test(t)) { marks++; pts.push("Correct reason (used up / no photosynthesis)."); } else { imp.push("Explain that starch was 'used up for respiration' or no new starch was made due to 'no photosynthesis'."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    }
+                ]
+            },
+            {
+                id: 'p5',
+                title: { en: '5. Enzymes', ro: '5. Enzime', pl: '5. Enzymy', uk: '5. Ферменти' },
+                icon: 'ph-puzzle-piece',
+                questions: [
+                    {
+                        id: 'p5q1',
+                        q: {
+                            en: "Describe a practical investigation to find the optimum pH for the enzyme amylase. (6 marks)",
+                            ro: "Descrieți o investigație practică pentru a găsi pH-ul optim pentru enzima amilază. (6 puncte)",
+                            pl: "Opisz praktyczne badanie w celu znalezienia optymalnego pH dla enzymu amylazy. (6 punktów)",
+                            uk: "Опишіть практичне дослідження для знаходження оптимального pH для ферменту амілази. (6 балів)"
+                        },
+                        maxMarks: 6,
+                        models: {
+                            level1: "Mix amylase, starch, and a pH buffer. Test drops with iodine. Record the time it takes for starch to break down. Repeat with different pHs.",
+                            level2: "Put iodine in a spotting tile. Mix amylase, starch, and a pH buffer in a tube in a 35°C water bath. Every 30 seconds, put a drop on the iodine. Time how long it takes to stop turning blue-black. Repeat with different pH buffers.",
+                            level3: "Place a drop of iodine into each well of a spotting tile. Set up a water bath at 35°C to control temperature. Add fixed volumes of amylase, starch, and a specific pH buffer to a tube in the water bath. Start a stopwatch immediately upon mixing. Every 10 to 20 seconds, transfer a drop of the mixture to the spotting tile. Record the time taken for the iodine to remain orange/brown (all starch broken down). Repeat using different pH buffers. The optimum pH breaks starch down in the shortest time."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*iodin)(?=.*(spot|tile|well|dimple))/i.test(t)) { marks++; pts.push("Mentioned iodine / spotting tile."); } else { imp.push("State you use 'iodine' in a 'spotting tile'."); }
+                            if (/(?=.*(temp|water bath|thermometer|control))/i.test(t)) { marks++; pts.push("Mentioned controlling temperature."); } else { imp.push("Mention controlling the 'temperature' (e.g., using a water bath)."); }
+                            if (/(?=.*(mix|combin|add))(?=.*(amylase|enzyme))(?=.*(buffer|pH))(?=.*(starch|substrate))/i.test(t)) { marks++; pts.push("Described mixing solutions."); } else { imp.push("Mention mixing 'amylase', a 'pH buffer', and 'starch'."); }
+                            if (/(?=.*(every|time|interval|30|10|20))(?=.*(drop|sample|transfer))/i.test(t)) { marks++; pts.push("Described taking samples over time."); } else { imp.push("Explain transferring a 'drop' of the mixture 'every 10-30 seconds'."); }
+                            if (/(?=.*(stopwatch|timer|clock|record|time))(?=.*(orang|brown|colourless|broken|no longer|change))/i.test(t)) { marks++; pts.push("Mentioned end point colour/timing."); } else { imp.push("Record the time when iodine remains 'orange/brown'."); }
+                            if (/(?=.*(repeat))(?=.*(pH|different))/i.test(t)) { marks++; pts.push("Mentioned repeating with different pH."); } else { imp.push("Mention 'repeating' with different pH buffers to find the shortest time."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p5q2',
+                        q: {
+                            en: "In one trial at pH 6, 2.0 cm³ of starch solution was completely broken down in 90 seconds. Calculate the rate of starch digestion. Give your answer in cm³/s to two decimal places. (3 marks)",
+                            ro: "Într-un test la pH 6, 2,0 cm³ de soluție de amidon a fost complet descompusă în 90 de secunde. Calculați viteza de digestie a amidonului. Dați răspunsul în cm³/s la două zecimale. (3 puncte)",
+                            pl: "W jednym badaniu przy pH 6, 2,0 cm³ roztworu skrobi uległo całkowitemu rozkładowi w ciągu 90 sekund. Oblicz szybkość trawienia skrobi. Podaj odpowiedź w cm³/s do dwóch miejsc po przecinku. (3 punkty)",
+                            uk: "В одному випробуванні при pH 6, 2,0 см³ розчину крохмалю було повністю розщеплено за 90 секунд. Обчисліть швидкість перетравлення крохмалю. Дайте відповідь у см³/с до двох десяткових знаків. (3 бали)"
+                        },
+                        maxMarks: 3,
+                        models: {
+                            level1: "Rate is volume divided by time. 2.0 / 90.",
+                            level2: "Rate = Volume / time. 2.0 / 90 = 0.0222. Answer is 0.02 cm3/s.",
+                            level3: "Formula: Rate = Volume / time. Calculation: 2.0 / 90. Answer: 0.02 cm³/s"
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(rate|speed).*(volum|amount).*(time|second)/i.test(t) || /(v\s*[\/\div]\s*t)/i.test(t) || /(div|\/|over|by)/i.test(t)) { marks++; pts.push("Stated formula (Volume / time)."); } else { imp.push("State or use the formula: Rate = 'Volume / time'."); }
+                            if (/(2\.0|2).*(div|\/|over|by).*(90)/i.test(t)) { marks++; pts.push("Correct substitution (2.0 / 90)."); } else { imp.push("Show correct substitution: '2.0 / 90'."); }
+                            if (/(0\.02|\.02)/i.test(t)) { marks++; pts.push("Correct final answer to 2 decimal places (0.02)."); } else { imp.push("State the final answer to two decimal places: '0.02'."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p5q3',
+                        q: {
+                            en: "Explain why the amylase takes much longer to break down starch at pH 8 than at pH 7. (4 marks)",
+                            ro: "Explicați de ce amilaza are nevoie de mult mai mult timp pentru a descompune amidonul la pH 8 decât la pH 7. (4 puncte)",
+                            pl: "Wyjaśnij, dlaczego amylaza rozkłada skrobię znacznie dłużej przy pH 8 niż przy pH 7. (4 punkty)",
+                            uk: "Поясніть, чому амілазі потрібно набагато більше часу для розщеплення крохмалю при pH 8, ніж при pH 7. (4 бали)"
+                        },
+                        maxMarks: 4,
+                        models: {
+                            level1: "pH 8 is not the optimum. The enzyme is denatured so the starch doesn't fit.",
+                            level2: "pH 8 is past the optimum pH. The alkaline conditions change the shape of the active site. The enzyme is denatured so the starch substrate cannot fit into it.",
+                            level3: "pH 8 is further away from the enzyme's optimum pH. The alkaline conditions interfere with the bonds holding the enzyme molecule together. This changes the specific shape of the active site (the enzyme is partially denatured). The starch (substrate) no longer fits the active site perfectly, so fewer enzyme-substrate complexes can form per second."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(optimum|best|ideal))/i.test(t)) { marks++; pts.push("Mentioned it is away from the optimum pH."); } else { imp.push("State that pH 8 is away from the 'optimum' pH."); }
+                            if (/(?=.*(bond|interfere|alkaline|force))/i.test(t) || /(?=.*denatur)/i.test(t)) { marks++; pts.push("Mentioned interference with bonds / denaturing."); } else { imp.push("Explain that the pH interferes with 'bonds' causing it to 'denature'."); }
+                            if (/(?=.*(shape|change))(?=.*(active site))/i.test(t)) { marks++; pts.push("Explained the active site changes shape."); } else { imp.push("State that the specific shape of the 'active site changes'."); }
+                            if (/(?=.*(fit|bind|complex))(?=.*(starch|substrate|no longer|cannot))/i.test(t)) { marks++; pts.push("Explained substrate no longer fits."); } else { imp.push("Explain that the starch (substrate) 'no longer fits' the active site perfectly."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p5q4',
+                        q: {
+                            en: "In the method, why must the amylase, buffer, and starch solutions be left in the water bath for 5 minutes before they are mixed together? (2 marks)",
+                            ro: "În metodă, de ce soluțiile de amilază, tampon și amidon trebuie lăsate în baia de apă timp de 5 minute înainte de a fi amestecate împreună? (2 puncte)",
+                            pl: "W tej metodzie, dlaczego roztwory amylazy, buforu i skrobi muszą pozostać w łaźni wodnej przez 5 minut, zanim zostaną ze sobą zmieszane? (2 punkty)",
+                            uk: "Чому за цим методом розчини амілази, буфера та крохмалю необхідно залишити на водяній бані на 5 хвилин перед змішуванням? (2 бали)"
+                        },
+                        maxMarks: 2,
+                        models: {
+                            level1: "So they get to the right temperature.",
+                            level2: "To allow all solutions to reach the same temperature. This ensures temperature does not act as an uncontrolled variable.",
+                            level3: "To allow all solutions to reach the same temperature / equilibrate to the temperature of the water bath. So that temperature does not act as an uncontrolled variable affecting the initial rate of reaction."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(reach|get to|same|equilibrat|allow))(?=.*(temperatur|heat|35))/i.test(t)) { marks++; pts.push("To allow solutions to reach the same temperature."); } else { imp.push("Explain it allows the solutions to 'reach the same temperature'."); }
+                            if (/(?=.*(control|variable|affect|rate|fair test))/i.test(t)) { marks++; pts.push("So temperature does not affect the rate / acts as an uncontrolled variable."); } else { imp.push("Explain this prevents temperature from acting as an uncontrolled 'variable' affecting the rate."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    }
+                ]
+            },
+            {
+                id: 'p6',
+                title: { en: '6. Photosynthesis', ro: '6. Fotosinteză', pl: '6. Fotosynteza', uk: '6. Фотосинтез' },
+                icon: 'ph-plant',
+                questions: [
+                    {
+                        id: 'p6q1',
+                        q: {
+                            en: "A student investigates the effect of light intensity on the rate of photosynthesis in pondweed. Describe how the student can measure the rate of photosynthesis accurately. (4 marks)",
+                            ro: "Un elev investighează efectul intensității luminii asupra ratei fotosintezei la o plantă acvatică. Descrieți cum poate elevul să măsoare cu precizie rata fotosintezei. (4 puncte)",
+                            pl: "Uczeń bada wpływ natężenia światła na szybkość fotosyntezy u moczarki. Opisz, w jaki sposób uczeń może dokładnie zmierzyć szybkość fotosyntezy. (4 punkty)",
+                            uk: "Учень досліджує вплив інтенсивності світла на швидкість фотосинтезу у водяної рослини. Опишіть, як учень може точно виміряти швидкість фотосинтезу. (4 бали)"
+                        },
+                        maxMarks: 4,
+                        models: {
+                            level1: "Put the pondweed in water. Catch the bubbles of oxygen it makes in a syringe. Time it for 5 minutes to find the rate.",
+                            level2: "Submerge the pondweed in water. Collect the oxygen gas produced in a gas syringe to accurately measure the volume. Divide the volume of gas by the time taken to find the rate.",
+                            level3: "Submerge a piece of pondweed in a beaker of water or sodium hydrogen carbonate solution. Collect the gas produced using an inverted measuring cylinder filled with water or a gas syringe. Measure the volume of oxygen gas produced. Divide the volume of gas by a set period of time (e.g., 5 minutes) to find an accurate rate."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(submerg|put|place|pondweed))(?=.*(water|sodium hydrogen carbonate|solution|beaker|tube))/i.test(t)) { marks++; pts.push("Submerge pondweed in water/solution."); } else { imp.push("Mention 'submerging' the pondweed in water or solution."); }
+                            if (/(?=.*(collect|catch))(?=.*(gas|syringe|measuring cylinder))/i.test(t)) { marks++; pts.push("Collect gas using a syringe or measuring cylinder."); } else { imp.push("Explain you must 'collect' the gas using a 'gas syringe' or measuring cylinder."); }
+                            if (/(?=.*(measure|record))(?=.*(volum|amount|oxygen|gas))/i.test(t)) { marks++; pts.push("Measure the volume of oxygen produced."); } else { imp.push("State you must 'measure the volume' of oxygen gas produced."); }
+                            if (/(?=.*(divid|calculat|rate|per))(?=.*(time|minut|second))/i.test(t)) { marks++; pts.push("Divide volume by time to find the rate."); } else { imp.push("Explain you must divide the volume by a set 'time' to calculate the 'rate'."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p6q2',
+                        q: {
+                            en: "Identify the independent variable and the dependent variable for this investigation. Give two variables that must be controlled. (4 marks)",
+                            ro: "Identificați variabila independentă și variabila dependentă pentru această investigație. Dați două variabile care trebuie controlate. (4 puncte)",
+                            pl: "Zidentyfikuj zmienną niezależną i zmienną zależną dla tego badania. Podaj dwie zmienne, które należy kontrolować. (4 punkty)",
+                            uk: "Визначте незалежну змінну та залежну змінну для цього дослідження. Наведіть дві змінні, які необхідно контролювати. (4 бали)"
+                        },
+                        maxMarks: 4,
+                        models: {
+                            level1: "Independent is light distance. Dependent is bubbles. Control the temperature and the plant used.",
+                            level2: "Independent variable: Light intensity / distance of the lamp. Dependent variable: Volume of oxygen produced per minute. Control variables: Temperature of water, and concentration of carbon dioxide.",
+                            level3: "Independent: Light intensity / distance of the lamp from the pondweed. Dependent: Volume of oxygen produced per minute (rate of photosynthesis). Control variables (any 2): Temperature of the water, concentration of carbon dioxide (using same concentration of NaHCO3), wavelength/colour of light, length/species of pondweed."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(independent))(?=.*(light|intens|distanc))/i.test(t)) { marks++; pts.push("Correct independent variable (Light intensity / distance)."); } else { imp.push("State the independent variable is 'light intensity' or 'distance'."); }
+                            if (/(?=.*(dependent))(?=.*(volum|oxygen|gas|bubbl|rate))/i.test(t)) { marks++; pts.push("Correct dependent variable (Volume of oxygen/rate)."); } else { imp.push("State the dependent variable is 'volume of oxygen' or 'rate'."); }
+                            if (/(?=.*(control))(?=.*(temp|co2|carbon dioxid|colour|wavelength|length|species))/i.test(t)) { marks++; pts.push("Identified a control variable."); } else { imp.push("Identify a control variable (e.g., 'temperature', 'CO2')."); }
+                            if (/(temp|co2|carbon dioxid|colour|wavelength|length|species).*?(temp|co2|carbon dioxid|colour|wavelength|length|species)/i.test(t)) { marks++; pts.push("Identified a second control variable."); } else { imp.push("Identify a second control variable."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p6q3',
+                        q: {
+                            en: "The lamp is placed 10 cm away from the pondweed. Calculate the relative light intensity using the inverse square law (I \u221D 1/d\u00B2). Show your working. (3 marks)",
+                            ro: "Lampa este așezată la 10 cm distanță de plantă. Calculați intensitatea relativă a luminii folosind legea pătratului invers (I \u221D 1/d\u00B2). Arătați-vă calculul. (3 puncte)",
+                            pl: "Lampa jest umieszczona w odległości 10 cm od moczarki. Oblicz względne natężenie światła korzystając z prawa odwrotnych kwadratów (I \u221D 1/d\u00B2). Pokaż swoje obliczenia. (3 punkty)",
+                            uk: "Лампа розташована на відстані 10 см від водяної рослини. Обчисліть відносну інтенсивність світла за законом зворотних квадратів (I \u221D 1/d\u00B2). Покажіть свої розрахунки. (3 бали)"
+                        },
+                        maxMarks: 3,
+                        models: {
+                            level1: "1 / 10 squared. That is 1 / 100. Answer is 0.01.",
+                            level2: "Intensity = 1 / d^2. So I = 1 / 10^2 = 1 / 100. I = 0.01 arbitrary units.",
+                            level3: "Formula: I = 1 / d^2. Substitution: 1 / 10^2 OR 1 / 100. Answer: 0.01 arbitrary units."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(1\s*[\/\div]\s*d\^2|1\s*[\/\div]\s*distance|inverse square|1\s*divid.*distance)/i.test(t) || /(1\s*[\/\div]\s*10)/i.test(t)) { marks++; pts.push("Stated or used formula (I = 1/d²)."); } else { imp.push("State or use the formula: I = '1 / d²'."); }
+                            if (/(1\s*[\/\div]\s*10\^2|1\s*[\/\div]\s*10\s*squared|1\s*[\/\div]\s*100|1\s*over\s*100)/i.test(t)) { marks++; pts.push("Correct substitution (1 / 100)."); } else { imp.push("Show correct substitution: '1 / 10²' or '1 / 100'."); }
+                            if (/(0\.01|\.01)/i.test(t)) { marks++; pts.push("Correct answer (0.01)."); } else { imp.push("State the final answer: '0.01'."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    },
+                    {
+                        id: 'p6q4',
+                        q: {
+                            en: "A student moves the lamp from 20 cm away to 40 cm away. They observe that the rate of photosynthesis decreases, but it does not exactly halve. Evaluate why this happens using mathematical and biological reasoning. (4 marks)",
+                            ro: "Un elev mută lampa de la 20 cm distanță la 40 cm distanță. El observă că rata fotosintezei scade, dar nu se înjumătățește exact. Evaluați de ce se întâmplă acest lucru folosind un raționament matematic și biologic. (4 puncte)",
+                            pl: "Uczeń przesuwa lampę z odległości 20 cm na 40 cm. Zauważa, że szybkość fotosyntezy spada, ale nie dokładnie o połowę. Oceń, dlaczego tak się dzieje, używając rozumowania matematycznego i biologicznego. (4 punkty)",
+                            uk: "Учень переміщує лампу з відстані 20 см на 40 см. Він спостерігає, що швидкість фотосинтезу зменшується, але не рівно вдвічі. Оцініть, чому це відбувається, використовуючи математичні та біологічні міркування. (4 бали)"
+                        },
+                        maxMarks: 4,
+                        models: {
+                            level1: "If you double the distance, light drops by 4 times because of the inverse square law. Also temperature might be changing.",
+                            level2: "Because of the inverse square law, doubling the distance from 20cm to 40cm causes light intensity to drop by a factor of 4. So the rate should theoretically drop by a factor of 4. If it doesn't, temperature or CO2 might be the limiting factor instead.",
+                            level3: "According to the inverse square law, doubling the distance causes the light intensity to drop by a factor of 4 (a quarter). Therefore, theoretically, the rate should decrease by a factor of 4, not 2 (halve). However, if it does not match this theoretical drop perfectly, another factor may have become the limiting factor. For example, temperature or carbon dioxide concentration may be limiting the rate, OR background light in the room was not fully controlled."
+                        },
+                        markFn: (t) => {
+                            let marks = 0, pts = [], imp = [];
+                            if (/(?=.*(invers|squar|law|factor of 4|quarter|four times))/i.test(t)) { marks++; pts.push("Explained inverse square law / light drops by factor of 4."); } else { imp.push("Explain that according to the inverse square law, light drops by a 'factor of 4'."); }
+                            if (/(?=.*(theor|should|decreas|drop|rate))(?=.*(4|four|quarter))/i.test(t)) { marks++; pts.push("Explained theoretical rate drop."); } else { imp.push("State that theoretically the rate should decrease by a 'factor of 4', not 2."); }
+                            if (/(?=.*(limit))(?=.*(factor))/i.test(t)) { marks++; pts.push("Mentioned limiting factors."); } else { imp.push("Explain that another factor may have become the 'limiting factor'."); }
+                            if (/(?=.*(temperatur|co2|carbon dioxid|background light))/i.test(t)) { marks++; pts.push("Identified other biological/environmental factors."); } else { imp.push("Give an example of a limiting factor (e.g., 'temperature', 'CO2', or 'background light')."); }
+                            return { marks, positivePoints: pts, improvement: imp.join(" ") };
+                        }
+                    }
+                ]
+            }
+        ];
+
+        // --- COMPONENT: Dictation / Speech to Text ---
+        function DictationButton({ onDictation, lang, ui }) {
+            const [isListening, setIsListening] = useState(false);
+            const [notSupported, setNotSupported] = useState(false);
+            const recognitionRef = useRef(null);
+            
+            const toggleListen = () => {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    setNotSupported(true);
+                    return;
+                }
+                
+                if (isListening) {
+                    if (recognitionRef.current) {
+                        recognitionRef.current.stop();
+                    }
+                    setIsListening(false);
+                    return;
+                }
+                
+                const recognition = new SpeechRecognition();
+                recognition.lang = DICT_LANGS[lang] || 'en-GB';
+                recognition.continuous = true; 
+                recognition.interimResults = false;
+                
+                recognition.onstart = () => setIsListening(true);
+                
+                recognition.onresult = (e) => {
+                    const latestResult = e.results[e.results.length - 1];
+                    if (latestResult.isFinal) {
+                        onDictation(latestResult[0].transcript);
+                    }
+                };
+                
+                recognition.onerror = (e) => {
+                    console.error("Speech recognition error:", e);
+                    setIsListening(false);
+                };
+                
+                recognition.onend = () => {
+                    setIsListening(false);
+                };
+                
+                recognitionRef.current = recognition;
+                recognition.start();
+            };
+            
+            return (
+                <div className="flex items-center gap-2">
+                    <button 
+                        type="button"
+                        onClick={toggleListen}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${isListening ? 'bg-red-100 text-red-600 border-red-300 animate-pulse shadow-inner' : 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200 shadow-sm'} border`}
+                    >
+                        {isListening ? (
+                            <><i className="ph-fill ph-stop-circle icon-md"></i> {ui.stopDict}</>
+                        ) : (
+                            <><i className="ph-fill ph-microphone icon-md"></i> {ui.startDict}</>
+                        )}
+                    </button>
+                    {notSupported && <span className="text-red-500 text-sm font-medium bg-red-50 px-2 py-1 rounded">{ui.notSupported}</span>}
+                </div>
+            );
+        }
+
+        // --- COMPONENT: Speak Question Button (Text-to-Speech) ---
+        function SpeakQuestionButton({ text, langCode, ui }) {
+            const [isSpeaking, setIsSpeaking] = useState(false);
+
+            useEffect(() => {
+                window.speechSynthesis.cancel();
+                setIsSpeaking(false);
+                return () => window.speechSynthesis.cancel();
+            }, [text]);
+
+            const toggleSpeak = () => {
+                if (isSpeaking) {
+                    window.speechSynthesis.cancel();
+                    setIsSpeaking(false);
+                } else {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = langCode;
+                    utterance.onend = () => setIsSpeaking(false);
+                    utterance.onerror = () => setIsSpeaking(false);
+                    window.speechSynthesis.speak(utterance);
+                    setIsSpeaking(true);
+                }
+            };
+
+            return (
+                <button
+                    onClick={toggleSpeak}
+                    title={isSpeaking ? ui.stopReading : ui.readAloud}
+                    className={`flex-shrink-0 p-2 rounded-full transition-colors flex items-center justify-center mt-1 ${isSpeaking ? 'bg-emerald-200 text-emerald-800 shadow-inner' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 shadow-sm'}`}
+                >
+                    <i className={`ph-fill ${isSpeaking ? 'ph-stop-circle' : 'ph-speaker-high'} icon-md`}></i>
+                </button>
+            );
+        }
+
+        // --- COMPONENT: Individual Question Card ---
+        function QuestionCard({ eq, lang, ui, answer, setAnswer, feedback, setFeedback }) {
+            const [isMarking, setIsMarking] = useState(false);
+            const [showModels, setShowModels] = useState(false);
+
+            const appendDictation = (text) => {
+                setAnswer(prev => prev + (prev.length && !prev.endsWith(' ') ? ' ' : '') + text);
+            };
+
+            const handleSubmit = () => {
+                if (answer.trim().length < 2) return;
+                setIsMarking(true);
+                setFeedback(null);
+
+                setTimeout(() => {
+                    const result = eq.markFn(answer.toLowerCase());
+                    setFeedback(result);
+                    setIsMarking(false);
+                }, 600);
+            };
+
+            return (
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8 print-break animate-in fade-in">
+                    
+                    {/* Header */}
+                    <div className="bg-emerald-50 p-5 border-b border-emerald-100 flex flex-col sm:flex-row justify-between items-start gap-4">
+                        <div className="flex items-start gap-3">
+                            <SpeakQuestionButton text={eq.q[lang]} langCode={DICT_LANGS[lang]} ui={ui} />
+                            <h3 className="text-lg font-bold text-slate-800 leading-relaxed mt-0.5">{eq.q[lang]}</h3>
+                        </div>
+                        <span className="bg-white px-3 py-1 rounded text-sm font-bold text-emerald-800 border border-emerald-200 shrink-0 mt-1 sm:mt-0">[{eq.maxMarks} Marks]</span>
+                    </div>
+                    
+                    {/* Interactive Body */}
+                    <div className="p-6 grid lg:grid-cols-2 gap-8 interactive-container">
+                        {/* Left: Input */}
+                        <div className="space-y-4">
+                            <textarea 
+                                value={answer}
+                                onChange={(e) => setAnswer(e.target.value)}
+                                placeholder={ui.typeHere} 
+                                className="w-full h-48 p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 resize-none font-sans text-base" 
+                                disabled={isMarking} 
+                            />
+                            <div className="flex flex-col sm:flex-row gap-3 justify-between items-center">
+                                <div className="flex items-center gap-3">
+                                    <DictationButton onDictation={appendDictation} lang={lang} ui={ui} />
+                                </div>
+                                
+                                <div className="flex gap-2 flex-1 justify-end action-buttons">
+                                    <button 
+                                        onClick={() => setShowModels(!showModels)} 
+                                        className={`px-4 py-2 rounded-lg font-medium border flex items-center gap-2 ${showModels ? 'bg-slate-800 text-white border-slate-800' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'}`}
+                                    >
+                                        {showModels ? ui.hideMod : ui.revealMod}
+                                    </button>
+                                    <button 
+                                        onClick={handleSubmit} 
+                                        disabled={isMarking || answer.trim().length === 0} 
+                                        className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium disabled:opacity-50 flex items-center gap-2"
+                                    >
+                                        {isMarking ? <><i className="ph-bold ph-spinner animate-spin"></i> ...</> : ui.markAns}
+                                    </button>
+                                </div>
+                            </div>
+                            <p className="text-xs text-amber-600 font-medium italic text-right">{ui.dictCheck}</p>
+                        </div>
+
+                        {/* Right: Feedback */}
+                        <div className={`p-5 rounded-lg border flex flex-col justify-center items-center transition-colors duration-300 ${feedback ? 'bg-green-50/50 border-green-200' : 'bg-slate-50 border-slate-200 border-dashed text-slate-400'}`}>
+                            {!feedback && !isMarking && <p className="text-center px-4">{ui.submitMsg}</p>}
+                            {isMarking && <p className="text-center text-emerald-500 animate-pulse"><i className="ph-bold ph-spinner animate-spin icon-xl mb-2 block mx-auto"></i>{ui.checkMsg}</p>}
+                            {feedback && (
+                                <div className="animate-in fade-in w-full">
+                                    <div className="flex justify-between items-center mb-4 border-b border-green-200 pb-2">
+                                        <h4 className="font-bold text-slate-800">{ui.autoFeed}</h4>
+                                        <span className="font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full text-lg">{feedback.marks} / {eq.maxMarks}</span>
+                                    </div>
+                                    <div className="space-y-4 text-sm">
+                                        <div>
+                                            <strong className="text-green-700 flex items-center gap-1 mb-2"><i className="ph-fill ph-check-circle icon-md"></i> {ui.didWell}</strong>
+                                            <ul className="list-disc pl-6 text-slate-700 space-y-1">
+                                                {feedback.positivePoints.length > 0 ? feedback.positivePoints.map((p, idx) => <li key={idx}>{p}</li>) : <li>Attempt submitted.</li>}
+                                            </ul>
+                                        </div>
+                                        {feedback.marks < eq.maxMarks && (
+                                            <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
+                                                <strong className="text-amber-800 flex items-center gap-1 mb-1"><i className="ph-fill ph-warning-circle icon-md"></i> {ui.toImprove}</strong>
+                                                <p className="text-amber-900">{feedback.improvement}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Model Answers Dropdown (Interactive View) */}
+                    {showModels && (
+                        <div className="bg-slate-50 p-6 border-t border-slate-200 animate-in slide-in-from-top-2 interactive-container">
+                            <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><i className="ph-bold ph-book-open text-emerald-600 icon-lg"></i> Levelled Model Answers</h4>
+                            <div className="grid md:grid-cols-3 gap-4">
+                                <div className="p-4 bg-orange-50 border-l-4 border-orange-400 rounded-lg flex flex-col shadow-sm">
+                                    <span className="text-xs font-bold text-orange-800 uppercase tracking-wider block mb-2">{ui.lvl1}</span>
+                                    <p className="text-sm text-slate-700 italic flex-1">"{eq.models.level1}"</p>
+                                </div>
+                                <div className="p-4 bg-blue-50 border-l-4 border-blue-400 rounded-lg flex flex-col shadow-sm">
+                                    <span className="text-xs font-bold text-blue-800 uppercase tracking-wider block mb-2">{ui.lvl2}</span>
+                                    <p className="text-sm text-slate-700 italic flex-1">"{eq.models.level2}"</p>
+                                </div>
+                                <div className="p-4 bg-green-50 border-l-4 border-green-500 rounded-lg flex flex-col shadow-sm">
+                                    <span className="text-xs font-bold text-green-800 uppercase tracking-wider block mb-2">{ui.lvl3}</span>
+                                    <p className="text-sm text-slate-700 italic flex-1">"{eq.models.level3}"</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Print-Only View for this Question */}
+                    <div className="print-view-container text-black bg-white mt-4 hidden">
+                        <h3 className="font-semibold text-slate-600 text-sm uppercase mt-4">{ui.yourAns}</h3>
+                        <p className="whitespace-pre-wrap text-slate-800 text-base mt-2 p-4 bg-slate-50 border border-slate-200 rounded">{answer || ui.noAns}</p>
+                        
+                        {feedback ? (
+                            <div className="mt-4 border-l-4 border-emerald-500 pl-4 py-2">
+                                <h3 className="font-bold text-lg text-slate-800 mb-2">{ui.autoFeed} ({feedback.marks} / {eq.maxMarks})</h3>
+                                <p className="text-sm font-semibold text-slate-600 uppercase mt-2 mb-1">{ui.didWell}</p>
+                                <ul className="list-disc pl-5 text-slate-800 text-sm mb-2">
+                                    {feedback.positivePoints.map((p, idx) => <li key={idx}>{p}</li>)}
+                                </ul>
+                                {feedback.marks < eq.maxMarks && (
+                                    <>
+                                        <p className="text-sm font-semibold text-slate-600 uppercase mt-3 mb-1">{ui.toImprove}</p>
+                                        <p className="text-base text-slate-800 bg-amber-50 p-3 border border-amber-200 rounded">{feedback.improvement}</p>
+                                    </>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="mt-4 text-slate-500 italic">
+                                {ui.notMarked}
+                            </div>
+                        )}
+
+                        <div className="mt-4">
+                            <h3 className="font-bold text-lg text-slate-800 mb-2">Model Answer ({ui.lvl3}):</h3>
+                            <p className="whitespace-pre-wrap text-slate-800 text-base p-4 bg-green-50 border border-green-200 rounded">{eq.models.level3}</p>
+                        </div>
+                    </div>
+
+                </div>
+            );
+        }
+
+        // --- COMPONENT: Practical Tab Container ---
+        function PracticalTab({ practical, lang, ui }) {
+            // Manage state for all questions inside this practical
+            const [answers, setAnswers] = useState({});
+            const [feedbacks, setFeedbacks] = useState({});
+
+            // Clear state when switching practicals to keep it clean, or could preserve.
+            // Preserving state allows switching back and forth.
+            
+            const handlePrint = () => {
+                window.print();
+            };
+
+            return (
+                <div>
+                    {/* Print Header (Only visible on print) */}
+                    <div className="print-view-container text-black bg-white mb-8 hidden">
+                        <div className="border-b-2 border-slate-800 pb-4">
+                            <h1 className="text-3xl font-bold text-slate-900">{ui.title}</h1>
+                            <p className="text-slate-600 text-lg">{ui.createdBy}</p>
+                            <h2 className="text-2xl font-bold text-emerald-700 mt-4">{practical.title[lang]}</h2>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        {practical.questions.map(q => (
+                            <QuestionCard 
+                                key={q.id} 
+                                eq={q} 
+                                lang={lang} 
+                                ui={ui} 
+                                answer={answers[q.id] || ""}
+                                setAnswer={(val) => setAnswers(prev => ({...prev, [q.id]: typeof val === 'function' ? val(prev[q.id]||"") : val}))}
+                                feedback={feedbacks[q.id]}
+                                setFeedback={(val) => setFeedbacks(prev => ({...prev, [q.id]: val}))}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Master Print Button */}
+                    <div className="interactive-container mt-8 flex justify-center pb-12">
+                        <button onClick={handlePrint} className="px-8 py-4 bg-white text-emerald-700 border-2 border-emerald-300 rounded-xl hover:bg-emerald-50 font-bold flex items-center gap-3 cursor-pointer shadow-md text-lg transition-transform hover:scale-105">
+                            <i className="ph-bold ph-printer icon-lg"></i> {ui.printFeed}
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- MAIN APP LAYOUT ---
+        function App() {
+          const [activePracticalId, setActivePracticalId] = useState(PRACTICALS[0].id); 
+          const [lang, setLang] = useState('en');
+
+          const activePractical = PRACTICALS.find(p => p.id === activePracticalId);
+          const ui = UI_TEXT[lang];
+
+          return (
+            <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans print:bg-white print:min-h-0">
+              <header className="bg-emerald-700 text-white p-6 shadow-md interactive-container">
+                <div className="max-w-6xl mx-auto">
+                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                        <div className="overflow-hidden max-w-full flex items-center gap-4">
+                            <div className="bg-white/20 p-3 rounded-2xl shadow-inner hidden sm:flex transition-all duration-300">
+                                <i className={`ph-fill ${activePractical.icon} text-5xl text-white`}></i>
+                            </div>
+                            <div>
+                                <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2 whitespace-nowrap overflow-x-auto pb-1">
+                                    <i className={`ph-bold ${activePractical.icon} icon-xl shrink-0 sm:hidden`}></i>
+                                    {ui.title}
+                                </h1>
+                                <div className="text-emerald-100 mt-2 flex flex-wrap items-center gap-2 sm:gap-3">
+                                    <span>{ui.subtitle}</span>
+                                    <span className="hidden sm:inline text-emerald-300">•</span>
+                                    <span className="text-white font-medium bg-emerald-600/50 px-2.5 py-1 rounded flex items-center gap-1.5 text-sm">
+                                        <i className="ph-fill ph-chalkboard-teacher"></i> {ui.createdBy}
+                                    </span>
+                                    <span className="hidden sm:inline text-emerald-300">•</span>
+                                    <select 
+                                        value={lang} 
+                                        onChange={(e) => setLang(e.target.value)}
+                                        className="bg-emerald-800 text-white font-semibold border border-emerald-500 rounded-md px-2 py-1 text-sm outline-none hover:bg-emerald-600 cursor-pointer shadow-sm transition-colors"
+                                    >
+                                        <option value="en">🇬🇧 English</option>
+                                        <option value="ro">🇷🇴 Română</option>
+                                        <option value="pl">🇵🇱 Polski</option>
+                                        <option value="uk">🇺🇦 Українська</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Named Tabs Navigation */}
+                    <div className="mt-6 pt-5 border-t border-emerald-600/50">
+                        <nav className="tab-navigation flex flex-wrap gap-2">
+                            {PRACTICALS.map(p => (
+                                <button 
+                                    key={p.id}
+                                    onClick={() => setActivePracticalId(p.id)} 
+                                    className={`px-4 py-2.5 rounded-lg font-bold transition-all text-sm flex items-center gap-2 shadow-sm
+                                        ${activePracticalId === p.id ? 'bg-red-600 text-white scale-105 shadow-md ring-2 ring-red-400 ring-offset-2 ring-offset-emerald-700' : 'bg-white text-slate-800 hover:bg-slate-100 border border-transparent hover:border-slate-300'}`}
+                                >
+                                    <i className={`ph-bold ${p.icon} text-lg`}></i>
+                                    <span className="whitespace-nowrap">{p.title[lang]}</span>
+                                </button>
+                            ))}
+                        </nav>
+                    </div>
+                </div>
+              </header>
+
+              <main className="flex-1 w-full max-w-5xl mx-auto p-4 py-10">
+                <PracticalTab key={activePracticalId} practical={activePractical} lang={lang} ui={ui} />
+              </main>
+
+              <footer className="interactive-container text-center p-6 text-slate-500 text-sm font-medium">
+                {ui.createdBy} for AQA GCSE Biology
+              </footer>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
